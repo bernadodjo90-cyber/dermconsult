@@ -3,1251 +3,1851 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DermConsult — Consultation Dermatologique en Ligne</title>
+<title>DermConsult — Dermatologie en Ligne</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --navy: #1A3A5C;
-    --teal: #2E8B6E;
-    --coral: #E8856A;
-    --light: #FAFBFC;
-    --gray: #4A5568;
-    --border: #E2E8F0;
-    --bg-soft: #F0F4F8;
-    --white: #ffffff;
-    --red-soft: #FEF2F2;
-    --red: #E53E3E;
-  }
+/* ═══════════════════════════════════════
+   VARIABLES & RESET
+═══════════════════════════════════════ */
+:root {
+  --navy: #1A3A5C;
+  --teal: #2E8B6E;
+  --coral: #E8856A;
+  --light: #FAFBFC;
+  --gray: #4A5568;
+  --border: #E2E8F0;
+  --bg: #F0F4F8;
+  --white: #fff;
+  --red: #E53E3E;
+  --red-soft: #FEF2F2;
+  --yellow: #F6AD55;
+  --yellow-soft: #FFFBEB;
+  --green-soft: #F0FFF4;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--gray); min-height: 100vh; }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+/* ═══════════════════════════════════════
+   PAGES (affichage/masquage)
+═══════════════════════════════════════ */
+.page { display: none; }
+.page.active { display: block; animation: fadeIn .4s ease; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }
 
-  body {
-    font-family: 'Inter', sans-serif;
-    background: var(--bg-soft);
-    color: var(--gray);
-    min-height: 100vh;
-  }
+/* ═══════════════════════════════════════
+   PAGE 1 — ACCUEIL
+═══════════════════════════════════════ */
+#page-accueil {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f2740 0%, #1A3A5C 55%, #1e5a47 100%);
+  display: flex;
+  flex-direction: column;
+}
+.accueil-header {
+  padding: 1.5rem 2rem;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.logo-rond {
+  width: 44px; height: 44px;
+  background: var(--teal);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+}
+.logo-nom {
+  font-family: 'Playfair Display', serif;
+  color: #fff;
+  font-size: 1.45rem;
+  font-weight: 700;
+}
+.logo-nom span { color: #7ED8C4; }
 
-  /* TOAST */
-  .toast {
-    position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-    background: var(--navy);
-    color: #fff;
-    padding: .8rem 1.4rem;
-    border-radius: 10px;
-    font-size: .85rem;
-    font-weight: 500;
-    box-shadow: 0 8px 24px rgba(0,0,0,.2);
-    z-index: 500;
-    display: none;
-    animation: slideUp .3s ease;
-  }
-  .toast.show { display: block; }
-  .toast.success { background: var(--teal); }
-  .toast.error { background: var(--red); }
-  @keyframes slideUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+.accueil-centre {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+}
+.badge-accueil {
+  display: inline-block;
+  background: rgba(126,216,196,.15);
+  border: 1px solid rgba(126,216,196,.3);
+  color: #7ED8C4;
+  font-size: .78rem;
+  padding: 5px 18px;
+  border-radius: 20px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+}
+.titre-accueil {
+  font-family: 'Playfair Display', serif;
+  font-size: 3rem;
+  color: #fff;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: .8rem;
+}
+.titre-accueil span { color: #7ED8C4; }
+.sous-titre-accueil {
+  font-size: 1rem;
+  color: rgba(255,255,255,.65);
+  max-width: 520px;
+  line-height: 1.7;
+  margin-bottom: 3rem;
+}
+.portails {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.portail {
+  background: rgba(255,255,255,.07);
+  border: 1.5px solid rgba(255,255,255,.12);
+  border-radius: 18px;
+  padding: 2.2rem 2.5rem;
+  width: 250px;
+  cursor: pointer;
+  transition: all .28s;
+  text-align: center;
+}
+.portail:hover {
+  background: rgba(255,255,255,.14);
+  border-color: rgba(126,216,196,.55);
+  transform: translateY(-5px);
+  box-shadow: 0 14px 36px rgba(0,0,0,.22);
+}
+.portail-icone { font-size: 2.8rem; margin-bottom: 1rem; }
+.portail-titre {
+  font-family: 'Playfair Display', serif;
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: .4rem;
+}
+.portail-desc { font-size: .78rem; color: rgba(255,255,255,.55); line-height: 1.5; }
+.portail.admin { border-color: rgba(232,133,106,.3); }
+.portail.admin:hover { border-color: rgba(232,133,106,.7); }
 
-  /* HEADER */
-  header {
-    background: var(--navy);
-    padding: 0 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 68px;
-    box-shadow: 0 2px 12px rgba(26,58,92,0.18);
-  }
-  .logo {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .logo-icon {
-    width: 38px; height: 38px;
-    background: var(--teal);
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 20px;
-  }
-  .logo-text {
-    font-family: 'Playfair Display', serif;
-    color: #fff;
-    font-size: 1.35rem;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-  }
-  .logo-text span { color: #7ED8C4; }
-  .header-badge {
-    background: rgba(255,255,255,0.1);
-    border: 1px solid rgba(255,255,255,0.2);
-    color: #C8E6E0;
-    font-size: 0.72rem;
-    padding: 4px 12px;
-    border-radius: 20px;
-    letter-spacing: 0.5px;
-  }
+.pied-accueil {
+  padding: 1.2rem;
+  text-align: center;
+  font-size: .75rem;
+  color: rgba(255,255,255,.28);
+}
 
-  /* MAIN */
-  main {
-    max-width: 860px;
-    margin: 0 auto;
-    padding: 2.5rem 1.5rem 4rem;
-  }
+/* ═══════════════════════════════════════
+   PAGE 2 — CONNEXION ADMIN
+═══════════════════════════════════════ */
+#page-connexion {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f2740, #1A3A5C);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+.boite-connexion {
+  background: #fff;
+  border-radius: 18px;
+  padding: 2.8rem 2.5rem;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 24px 64px rgba(0,0,0,.28);
+}
+.connexion-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 1.8rem;
+}
+.connexion-titre {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  color: var(--navy);
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: .3rem;
+}
+.connexion-sous {
+  font-size: .83rem;
+  color: #718096;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+.erreur-connexion {
+  background: var(--red-soft);
+  border: 1px solid #FEB2B2;
+  border-radius: 8px;
+  padding: .75rem 1rem;
+  font-size: .82rem;
+  color: var(--red);
+  margin-bottom: 1rem;
+  display: none;
+}
+.erreur-connexion.visible { display: block; }
+.lien-retour {
+  display: block;
+  text-align: center;
+  font-size: .8rem;
+  color: var(--teal);
+  cursor: pointer;
+  margin-top: 1.2rem;
+}
+.lien-retour:hover { text-decoration: underline; }
+.indice-connexion {
+  font-size: .74rem;
+  color: #a0aec0;
+  text-align: center;
+  margin-top: .8rem;
+}
 
-  /* STEPPER */
-  .stepper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0;
-    margin-bottom: 2.5rem;
-  }
-  .step {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-  }
-  .step-circle {
-    width: 38px; height: 38px;
-    border-radius: 50%;
-    background: var(--border);
-    color: #aaa;
-    font-weight: 600;
-    font-size: 0.9rem;
-    display: flex; align-items: center; justify-content: center;
-    border: 2px solid var(--border);
-    transition: all 0.3s;
-  }
-  .step.active .step-circle {
-    background: var(--teal);
-    border-color: var(--teal);
-    color: white;
-    box-shadow: 0 0 0 4px rgba(46,139,110,0.15);
-  }
-  .step.done .step-circle {
-    background: var(--navy);
-    border-color: var(--navy);
-    color: white;
-  }
-  .step-label {
-    font-size: 0.72rem;
-    color: #aaa;
-    font-weight: 500;
-    letter-spacing: 0.3px;
-    white-space: nowrap;
-  }
-  .step.active .step-label { color: var(--teal); }
-  .step.done .step-label { color: var(--navy); }
-  .step-line {
-    flex: 1;
-    height: 2px;
-    background: var(--border);
-    margin: 0 8px;
-    margin-bottom: 22px;
-    min-width: 40px;
-    max-width: 100px;
-    transition: background 0.3s;
-  }
-  .step-line.done { background: var(--navy); }
+/* ═══════════════════════════════════════
+   EN-TÊTE APPLICATION
+═══════════════════════════════════════ */
+.entete-app {
+  background: var(--navy);
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.6rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 14px rgba(26,58,92,.22);
+}
+.entete-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.entete-logo-rond {
+  width: 34px; height: 34px;
+  background: var(--teal);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+.entete-logo-nom {
+  font-family: 'Playfair Display', serif;
+  color: #fff;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+.entete-logo-nom span { color: #7ED8C4; }
+.entete-badge {
+  background: rgba(255,255,255,.1);
+  color: rgba(255,255,255,.8);
+  font-size: .72rem;
+  padding: 4px 13px;
+  border-radius: 12px;
+}
+.btn-entete {
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.2);
+  color: rgba(255,255,255,.8);
+  font-size: .78rem;
+  padding: 6px 15px;
+  border-radius: 7px;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: all .2s;
+}
+.btn-entete:hover { background: rgba(255,255,255,.2); }
+.btn-deconnexion {
+  background: rgba(232,133,106,.2);
+  border: 1px solid rgba(232,133,106,.4);
+  color: #F9C8B6;
+  font-size: .78rem;
+  padding: 6px 15px;
+  border-radius: 7px;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: all .2s;
+}
+.btn-deconnexion:hover { background: rgba(232,133,106,.35); }
 
-  /* CARDS */
-  .card {
-    background: var(--white);
-    border-radius: 16px;
-    box-shadow: 0 2px 20px rgba(26,58,92,0.07);
-    padding: 2rem 2.2rem;
-    display: none;
-    animation: fadeIn 0.35s ease;
-  }
-  .card.active { display: block; }
-  @keyframes fadeIn { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: none; } }
+/* ═══════════════════════════════════════
+   CONTENEUR PRINCIPAL
+═══════════════════════════════════════ */
+.conteneur {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
 
-  .card-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.5rem;
-    color: var(--navy);
-    font-weight: 700;
-    margin-bottom: 0.3rem;
-  }
-  .card-sub {
-    font-size: 0.875rem;
-    color: #718096;
-    margin-bottom: 1.8rem;
-    line-height: 1.5;
-  }
+/* ═══════════════════════════════════════
+   STEPPER ÉTAPES
+═══════════════════════════════════════ */
+.etapes {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+.etape {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+.etape-cercle {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--border);
+  color: #aaa;
+  font-weight: 600;
+  font-size: .85rem;
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid var(--border);
+  transition: all .3s;
+}
+.etape.active .etape-cercle {
+  background: var(--teal);
+  border-color: var(--teal);
+  color: #fff;
+  box-shadow: 0 0 0 4px rgba(46,139,110,.15);
+}
+.etape.faite .etape-cercle {
+  background: var(--navy);
+  border-color: var(--navy);
+  color: #fff;
+}
+.etape-texte { font-size: .7rem; color: #aaa; font-weight: 500; white-space: nowrap; }
+.etape.active .etape-texte { color: var(--teal); }
+.etape.faite .etape-texte { color: var(--navy); }
+.etape-ligne {
+  flex: 1;
+  height: 2px;
+  background: var(--border);
+  margin: 0 6px;
+  margin-bottom: 22px;
+  min-width: 35px;
+  max-width: 90px;
+  transition: background .3s;
+}
+.etape-ligne.faite { background: var(--navy); }
 
-  /* PATIENT FORM */
-  .form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    margin-bottom: 1rem;
-  }
-  .form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-  .form-group.full { grid-column: 1 / -1; }
-  label {
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--navy);
-    letter-spacing: 0.3px;
-    text-transform: uppercase;
-  }
-  input, select, textarea {
-    border: 1.5px solid var(--border);
-    border-radius: 8px;
-    padding: 10px 14px;
-    font-family: 'Inter', sans-serif;
-    font-size: 0.9rem;
-    color: var(--gray);
-    outline: none;
-    transition: border-color 0.2s;
-    background: var(--light);
-  }
-  input:focus, select:focus, textarea:focus {
-    border-color: var(--teal);
-    background: white;
-    box-shadow: 0 0 0 3px rgba(46,139,110,0.1);
-  }
-  textarea { resize: vertical; min-height: 90px; }
+/* ═══════════════════════════════════════
+   CARTES
+═══════════════════════════════════════ */
+.carte {
+  background: var(--white);
+  border-radius: 16px;
+  box-shadow: 0 2px 18px rgba(26,58,92,.08);
+  padding: 2rem 2.2rem;
+  margin-bottom: 1.2rem;
+}
+.carte-titre {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.45rem;
+  color: var(--navy);
+  font-weight: 700;
+  margin-bottom: .3rem;
+}
+.carte-sous {
+  font-size: .85rem;
+  color: #718096;
+  margin-bottom: 1.6rem;
+  line-height: 1.55;
+}
 
-  /* SYMPTOM TAGS */
-  .symptom-section { margin-bottom: 1.5rem; }
-  .symptom-section-title {
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--navy);
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-    margin-bottom: 0.75rem;
-    padding-bottom: 6px;
-    border-bottom: 1px solid var(--border);
-  }
-  .tags-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-  .tag {
-    padding: 7px 14px;
-    border-radius: 20px;
-    border: 1.5px solid var(--border);
-    background: var(--light);
-    font-size: 0.82rem;
-    cursor: pointer;
-    transition: all 0.2s;
-    user-select: none;
-    font-weight: 500;
-    color: var(--gray);
-  }
-  .tag:hover { border-color: var(--teal); color: var(--teal); }
-  .tag.selected {
-    background: var(--teal);
-    border-color: var(--teal);
-    color: white;
-    box-shadow: 0 2px 8px rgba(46,139,110,0.25);
-  }
+/* ═══════════════════════════════════════
+   FORMULAIRE
+═══════════════════════════════════════ */
+.grille-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.champ { display: flex; flex-direction: column; gap: 5px; }
+.champ.plein { grid-column: 1 / -1; }
+.champ label {
+  font-size: .75rem;
+  font-weight: 700;
+  color: var(--navy);
+  text-transform: uppercase;
+  letter-spacing: .3px;
+}
+.champ input,
+.champ select,
+.champ textarea {
+  border: 1.5px solid var(--border);
+  border-radius: 9px;
+  padding: 10px 13px;
+  font-family: 'Inter', sans-serif;
+  font-size: .9rem;
+  color: var(--gray);
+  outline: none;
+  background: var(--light);
+  transition: border-color .2s;
+  width: 100%;
+}
+.champ input:focus,
+.champ select:focus,
+.champ textarea:focus {
+  border-color: var(--teal);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(46,139,110,.1);
+}
+.champ textarea { resize: vertical; min-height: 85px; }
 
-  /* SEVERITY */
-  .severity-row {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 1.2rem;
-  }
-  .sev-btn {
-    flex: 1;
-    padding: 10px;
-    border-radius: 8px;
-    border: 1.5px solid var(--border);
-    background: var(--light);
-    text-align: center;
-    cursor: pointer;
-    font-size: 0.82rem;
-    font-weight: 600;
-    transition: all 0.2s;
-    color: var(--gray);
-  }
-  .sev-btn.active-mild { background: #F0FFF4; border-color: #68D391; color: #276749; }
-  .sev-btn.active-moderate { background: #FFFBEB; border-color: #F6AD55; color: #744210; }
-  .sev-btn.active-severe { background: var(--red-soft); border-color: var(--red); color: var(--red); }
+/* ═══════════════════════════════════════
+   SYMPTÔMES TAGS
+═══════════════════════════════════════ */
+.bloc-symptome { margin-bottom: 1.3rem; }
+.bloc-symptome-titre {
+  font-size: .75rem;
+  font-weight: 700;
+  color: var(--navy);
+  text-transform: uppercase;
+  letter-spacing: .3px;
+  margin-bottom: .65rem;
+  padding-bottom: 5px;
+  border-bottom: 1px solid var(--border);
+}
+.grille-tags { display: flex; flex-wrap: wrap; gap: 7px; }
+.tag {
+  padding: 7px 14px;
+  border-radius: 20px;
+  border: 1.5px solid var(--border);
+  background: var(--light);
+  font-size: .8rem;
+  cursor: pointer;
+  transition: all .2s;
+  user-select: none;
+  font-weight: 500;
+  color: var(--gray);
+}
+.tag:hover { border-color: var(--teal); color: var(--teal); }
+.tag.selectionne {
+  background: var(--teal);
+  border-color: var(--teal);
+  color: #fff;
+  box-shadow: 0 2px 7px rgba(46,139,110,.28);
+}
 
-  /* BUTTONS */
-  .btn {
-    padding: 12px 28px;
-    border-radius: 9px;
-    border: none;
-    font-family: 'Inter', sans-serif;
-    font-size: 0.9rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    letter-spacing: 0.3px;
-  }
-  .btn-primary {
-    background: var(--teal);
-    color: white;
-    box-shadow: 0 2px 10px rgba(46,139,110,0.3);
-  }
-  .btn-primary:hover { background: #247a5e; transform: translateY(-1px); }
-  .btn-secondary {
-    background: transparent;
-    color: var(--navy);
-    border: 1.5px solid var(--border);
-  }
-  .btn-secondary:hover { border-color: var(--navy); }
-  .btn-navy {
-    background: var(--navy);
-    color: white;
-    box-shadow: 0 2px 10px rgba(26,58,92,0.3);
-  }
-  .btn-navy:hover { background: #142d47; transform: translateY(-1px); }
-  .btn-print {
-    background: var(--coral);
-    color: white;
-    box-shadow: 0 2px 10px rgba(232,133,106,0.3);
-  }
-  .btn-print:hover { background: #d4714f; }
+/* ═══════════════════════════════════════
+   SÉVÉRITÉ
+═══════════════════════════════════════ */
+.rangee-severite { display: flex; gap: 9px; margin-bottom: 1rem; }
+.btn-sev {
+  flex: 1;
+  padding: 10px;
+  border-radius: 9px;
+  border: 1.5px solid var(--border);
+  background: var(--light);
+  text-align: center;
+  cursor: pointer;
+  font-size: .82rem;
+  font-weight: 600;
+  transition: all .2s;
+  color: var(--gray);
+}
+.btn-sev.leger { background: var(--green-soft); border-color: #68D391; color: #276749; }
+.btn-sev.modere { background: var(--yellow-soft); border-color: var(--yellow); color: #744210; }
+.btn-sev.severe { background: var(--red-soft); border-color: var(--red); color: var(--red); }
 
-  .btn-row {
-    display: flex;
-    gap: 12px;
-    justify-content: flex-end;
-    margin-top: 1.8rem;
-  }
+/* ═══════════════════════════════════════
+   BOUTONS
+═══════════════════════════════════════ */
+.btn {
+  padding: 11px 26px;
+  border-radius: 9px;
+  border: none;
+  font-family: 'Inter', sans-serif;
+  font-size: .9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .2s;
+  letter-spacing: .2px;
+}
+.btn-principal { background: var(--teal); color: #fff; box-shadow: 0 2px 10px rgba(46,139,110,.3); }
+.btn-principal:hover { background: #247a5e; transform: translateY(-1px); }
+.btn-secondaire { background: transparent; color: var(--navy); border: 1.5px solid var(--border); }
+.btn-secondaire:hover { border-color: var(--navy); }
+.btn-sombre { background: var(--navy); color: #fff; box-shadow: 0 2px 10px rgba(26,58,92,.3); }
+.btn-sombre:hover { background: #142d47; }
+.btn-imprimer { background: var(--coral); color: #fff; }
+.btn-imprimer:hover { background: #d4714f; }
+.btn-danger { background: var(--red-soft); color: var(--red); border: 1.5px solid #FEB2B2; }
+.btn-danger:hover { background: #FEB2B2; }
+.btn-plein { width: 100%; padding: 12px; }
+.btn-petit { padding: 6px 14px; font-size: .78rem; }
+.rangee-btn { display: flex; gap: 10px; justify-content: flex-end; margin-top: 1.6rem; }
 
-  /* LOADING */
-  .loading-overlay {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 3rem;
-    gap: 1.2rem;
-  }
-  .loading-overlay.show { display: flex; }
-  .spinner {
-    width: 48px; height: 48px;
-    border: 4px solid var(--border);
-    border-top-color: var(--teal);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .loading-text {
-    color: var(--navy);
-    font-weight: 600;
-    font-size: 1rem;
-  }
-  .loading-sub { font-size: 0.82rem; color: #718096; }
+/* ═══════════════════════════════════════
+   CHARGEMENT
+═══════════════════════════════════════ */
+.zone-chargement {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  padding: 3.5rem 2rem;
+  gap: 1.2rem;
+  text-align: center;
+}
+.zone-chargement.visible { display: flex; }
+.roue {
+  width: 48px; height: 48px;
+  border: 4px solid var(--border);
+  border-top-color: var(--teal);
+  border-radius: 50%;
+  animation: tourner .85s linear infinite;
+}
+@keyframes tourner { to { transform: rotate(360deg); } }
+.texte-chargement { font-weight: 600; color: var(--navy); font-size: 1rem; }
+.sous-texte-chargement { font-size: .82rem; color: #718096; }
 
-  /* RESULT */
-  .diagnosis-banner {
-    background: linear-gradient(135deg, #1A3A5C 0%, #2E8B6E 100%);
-    border-radius: 12px;
-    padding: 1.5rem 1.8rem;
-    color: white;
-    margin-bottom: 1.5rem;
-  }
-  .diagnosis-label {
-    font-size: 0.75rem;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    opacity: 0.8;
-    margin-bottom: 6px;
-  }
-  .diagnosis-name {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.8rem;
-    font-weight: 700;
-    margin-bottom: 6px;
-  }
-  .confidence-bar-wrap {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-top: 8px;
-  }
-  .confidence-bar {
-    flex: 1;
-    height: 5px;
-    background: rgba(255,255,255,0.2);
-    border-radius: 3px;
-    overflow: hidden;
-  }
-  .confidence-fill {
-    height: 100%;
-    background: #7ED8C4;
-    border-radius: 3px;
-    transition: width 1s ease;
-  }
-  .confidence-pct { font-size: 0.82rem; opacity: 0.9; white-space: nowrap; }
+/* ═══════════════════════════════════════
+   RÉSULTAT DIAGNOSTIC
+═══════════════════════════════════════ */
+.banniere-diag {
+  background: linear-gradient(135deg, #1A3A5C 0%, #2E8B6E 100%);
+  border-radius: 13px;
+  padding: 1.5rem 1.8rem;
+  color: #fff;
+  margin-bottom: 1.3rem;
+}
+.diag-etiquette {
+  font-size: .72rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  opacity: .8;
+  margin-bottom: 5px;
+}
+.diag-nom {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.7rem;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+.diag-desc { font-size: .83rem; opacity: .9; line-height: 1.5; margin-top: 4px; }
+.barre-conf-wrap { display: flex; align-items: center; gap: 10px; margin-top: 9px; }
+.barre-conf { flex: 1; height: 5px; background: rgba(255,255,255,.2); border-radius: 3px; overflow: hidden; }
+.barre-conf-remplie { height: 100%; background: #7ED8C4; border-radius: 3px; transition: width 1.1s ease; }
 
-  .result-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    margin-bottom: 1rem;
-  }
-  .result-box {
-    background: var(--light);
-    border: 1.5px solid var(--border);
-    border-radius: 10px;
-    padding: 1.1rem;
-  }
-  .result-box-title {
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-weight: 700;
-    color: var(--navy);
-    margin-bottom: 0.7rem;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .result-box ul {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-  }
-  .result-box ul li {
-    font-size: 0.83rem;
-    line-height: 1.45;
-    display: flex;
-    gap: 7px;
-  }
-  .result-box ul li::before {
-    content: '•';
-    color: var(--teal);
-    font-weight: 900;
-    flex-shrink: 0;
-    margin-top: 1px;
-  }
-  .full-width { grid-column: 1 / -1; }
+.grille-resultats { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+.boite-resultat {
+  background: var(--light);
+  border: 1.5px solid var(--border);
+  border-radius: 11px;
+  padding: 1.1rem;
+}
+.boite-resultat-titre {
+  font-size: .71rem;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: .65rem;
+}
+.boite-resultat ul { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+.boite-resultat ul li { font-size: .81rem; line-height: 1.45; display: flex; gap: 7px; }
+.boite-resultat ul li::before { content: '•'; color: var(--teal); font-weight: 900; flex-shrink: 0; margin-top: 1px; }
+.pleine-largeur { grid-column: 1 / -1; }
 
-  /* ORDONNANCE */
-  #prescription-view { display: none; }
-  #prescription-view.show { display: block; }
+/* ═══════════════════════════════════════
+   ORDONNANCE
+═══════════════════════════════════════ */
+.papier-ordonnance {
+  background: #fff;
+  border: 1px solid #d0d7de;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 4px 22px rgba(26,58,92,.1);
+  position: relative;
+}
+.filigrane {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%) rotate(-30deg);
+  font-family: 'Playfair Display', serif;
+  font-size: 4.5rem;
+  font-weight: 700;
+  color: rgba(46,139,110,.04);
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 0;
+}
+.entete-ordonnance {
+  background: var(--navy);
+  color: #fff;
+  padding: 1.4rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.ordonnance-cabinet { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; }
+.ordonnance-sous { font-size: .72rem; opacity: .75; margin-top: 3px; }
+.ordonnance-logo {
+  width: 42px; height: 42px;
+  background: rgba(255,255,255,.15);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 21px;
+}
+.corps-ordonnance { padding: 1.8rem 2rem; }
+.meta-ordonnance {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.3rem;
+  padding-bottom: 1rem;
+  border-bottom: 1.5px solid var(--border);
+}
+.meta-bloc { font-size: .82rem; }
+.meta-etiquette { font-size: .68rem; text-transform: uppercase; letter-spacing: .5px; color: #999; margin-bottom: 2px; }
+.meta-valeur { font-weight: 600; color: var(--navy); }
+.bloc-diagnostic-rx {
+  background: linear-gradient(135deg, #EBF4F1, #E8F4FB);
+  border-left: 4px solid var(--teal);
+  border-radius: 7px;
+  padding: 1rem 1.2rem;
+  margin-bottom: 1.3rem;
+}
+.rx-dx-etiquette { font-size: .68rem; text-transform: uppercase; letter-spacing: .5px; color: var(--teal); font-weight: 700; margin-bottom: 3px; }
+.rx-dx-nom { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--navy); }
+.rx-dx-desc { font-size: .79rem; color: #4A5568; margin-top: 3px; }
+.rx-section-titre {
+  font-size: .71rem;
+  text-transform: uppercase;
+  letter-spacing: .8px;
+  font-weight: 700;
+  color: var(--gray);
+  margin-bottom: .65rem;
+  margin-top: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.rx-section-titre::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.tableau-rx { width: 100%; border-collapse: collapse; margin-bottom: .5rem; }
+.tableau-rx th {
+  font-size: .7rem;
+  text-transform: uppercase;
+  letter-spacing: .3px;
+  color: #999;
+  font-weight: 600;
+  text-align: left;
+  padding: 6px 10px;
+  background: var(--light);
+  border-bottom: 1px solid var(--border);
+}
+.tableau-rx td {
+  padding: 9px 10px;
+  font-size: .84rem;
+  border-bottom: 1px solid #F0F4F8;
+  vertical-align: top;
+  color: var(--gray);
+}
+.tableau-rx td:first-child { font-weight: 600; color: var(--navy); }
+.tableau-rx tr:last-child td { border-bottom: none; }
+.liste-rx { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+.liste-rx li { font-size: .82rem; display: flex; gap: 8px; line-height: 1.45; color: var(--gray); }
+.liste-rx.precautions li::before { content: '⚠'; font-size: .78rem; flex-shrink: 0; margin-top: 1px; }
+.liste-rx.mesures li::before { content: '✓'; color: var(--teal); font-weight: 900; flex-shrink: 0; margin-top: 1px; }
+.pied-ordonnance {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: 2rem;
+  padding-top: 1.2rem;
+  border-top: 1.5px solid var(--border);
+}
+.note-ordonnance { font-size: .7rem; color: #999; max-width: 55%; line-height: 1.55; }
+.signature { text-align: center; }
+.signature-nom { font-family: 'Playfair Display', serif; font-size: .88rem; color: var(--navy); font-weight: 600; margin-bottom: 3px; }
+.signature-ligne { width: 145px; height: 1px; background: var(--navy); margin: 0 auto 4px; }
+.signature-label { font-size: .69rem; color: #999; }
 
-  .prescription-paper {
-    background: white;
-    border: 1px solid #d0d7de;
-    border-radius: 4px;
-    padding: 0;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 4px 24px rgba(26,58,92,0.10);
-  }
+.avertissement {
+  background: #FFF8F6;
+  border: 1px solid #F9C8B6;
+  border-radius: 9px;
+  padding: .9rem 1.1rem;
+  margin-top: 1.2rem;
+  font-size: .78rem;
+  color: #7B4B3A;
+  line-height: 1.6;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
 
-  .rx-header {
-    background: var(--navy);
-    color: white;
-    padding: 1.4rem 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-  }
-  .rx-clinic-name {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.3rem;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-  }
-  .rx-clinic-sub { font-size: 0.77rem; opacity: 0.75; margin-top: 3px; letter-spacing: 0.3px; }
-  .rx-logo {
-    width: 44px; height: 44px;
-    background: rgba(255,255,255,0.15);
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 22px;
-  }
+/* ═══════════════════════════════════════
+   PAGE ADMIN — STATISTIQUES
+═══════════════════════════════════════ */
+.rangee-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.4rem;
+}
+.carte-stat {
+  background: #fff;
+  border-radius: 13px;
+  padding: 1.2rem;
+  box-shadow: 0 2px 12px rgba(26,58,92,.07);
+  border-left: 4px solid transparent;
+}
+.carte-stat.c1 { border-color: var(--teal); }
+.carte-stat.c2 { border-color: var(--coral); }
+.carte-stat.c3 { border-color: var(--navy); }
+.carte-stat.c4 { border-color: var(--yellow); }
+.stat-chiffre { font-family: 'Playfair Display', serif; font-size: 1.9rem; font-weight: 700; color: var(--navy); line-height: 1; }
+.stat-label { font-size: .72rem; color: #718096; margin-top: 5px; font-weight: 500; }
 
-  .rx-body { padding: 1.8rem 2rem; }
+/* ═══════════════════════════════════════
+   PAGE ADMIN — TABLEAU
+═══════════════════════════════════════ */
+.barre-outils {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.2rem;
+  flex-wrap: wrap;
+  gap: .8rem;
+}
+.champ-recherche {
+  padding: 9px 15px;
+  border: 1.5px solid var(--border);
+  border-radius: 9px;
+  font-size: .85rem;
+  background: #fff;
+  outline: none;
+  font-family: 'Inter', sans-serif;
+  min-width: 240px;
+  flex: 1;
+  max-width: 380px;
+}
+.champ-recherche:focus { border-color: var(--teal); }
+.select-filtre {
+  padding: 8px 13px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: .81rem;
+  background: #fff;
+  outline: none;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+}
+.select-filtre:focus { border-color: var(--teal); }
+.enveloppe-tableau {
+  background: #fff;
+  border-radius: 13px;
+  box-shadow: 0 2px 14px rgba(26,58,92,.07);
+  overflow: hidden;
+}
+.barre-tableau {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: .9rem 1.3rem;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+  gap: .6rem;
+}
+.compteur-tableau { font-size: .81rem; color: var(--navy); font-weight: 600; }
+table { width: 100%; border-collapse: collapse; }
+thead th {
+  font-size: .71rem;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+  color: #999;
+  font-weight: 700;
+  padding: 10px 14px;
+  background: var(--light);
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  white-space: nowrap;
+}
+tbody tr { border-bottom: 1px solid #F7FAFC; transition: background .15s; cursor: pointer; }
+tbody tr:hover { background: #F4FBF8; }
+tbody tr:last-child { border-bottom: none; }
+td { padding: 11px 14px; font-size: .83rem; color: var(--gray); }
+td.nom-patient { font-weight: 600; color: var(--navy); }
+.etiquette {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: .72rem;
+  font-weight: 600;
+}
+.etiquette-leger { background: var(--green-soft); color: #276749; }
+.etiquette-modere { background: var(--yellow-soft); color: #744210; }
+.etiquette-severe { background: var(--red-soft); color: var(--red); }
+.etiquette-diag { background: #EBF4F1; color: var(--teal); }
 
-  .rx-meta {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 1.4rem;
-    padding-bottom: 1rem;
-    border-bottom: 1.5px solid var(--border);
-    gap: 1rem;
-    flex-wrap: wrap;
-  }
-  .rx-meta-block { font-size: 0.82rem; }
-  .rx-meta-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; color: #999; margin-bottom: 2px; }
-  .rx-meta-value { font-weight: 600; color: var(--navy); }
+/* ═══════════════════════════════════════
+   GRAPHIQUE
+═══════════════════════════════════════ */
+.ligne-graphique { display: flex; align-items: center; gap: .9rem; margin-bottom: .5rem; }
+.label-graphique { font-size: .78rem; color: var(--gray); min-width: 165px; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fond-barre { flex: 1; height: 18px; background: var(--light); border-radius: 4px; overflow: hidden; }
+.remplissage-barre { height: 100%; background: linear-gradient(90deg, var(--teal), #7ED8C4); border-radius: 4px; transition: width .9s ease; }
+.chiffre-barre { font-size: .76rem; font-weight: 700; color: var(--navy); min-width: 24px; }
 
-  .rx-diagnosis-section {
-    background: linear-gradient(135deg, #EBF4F1 0%, #E8F4FB 100%);
-    border-left: 4px solid var(--teal);
-    border-radius: 6px;
-    padding: 1rem 1.2rem;
-    margin-bottom: 1.4rem;
-  }
-  .rx-dx-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--teal); font-weight: 700; margin-bottom: 4px; }
-  .rx-dx-name { font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 700; color: var(--navy); }
+/* ═══════════════════════════════════════
+   MODAL
+═══════════════════════════════════════ */
+.fond-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.5);
+  z-index: 300;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.fond-modal.ouvert { display: flex; }
+.modal {
+  background: #fff;
+  border-radius: 16px;
+  max-width: 760px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 22px 64px rgba(0,0,0,.24);
+}
+.modal-entete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.2rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 1;
+}
+.modal-titre { font-family: 'Playfair Display', serif; font-size: 1.12rem; color: var(--navy); font-weight: 700; }
+.modal-fermer { background: none; border: none; font-size: 1.3rem; cursor: pointer; color: #999; padding: 4px 9px; border-radius: 7px; }
+.modal-fermer:hover { background: var(--border); }
+.modal-corps { padding: 1.5rem; }
 
-  .rx-section-title {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    font-weight: 700;
-    color: var(--gray);
-    margin-bottom: 0.75rem;
-    margin-top: 1.2rem;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .rx-section-title::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
+/* ═══════════════════════════════════════
+   ÉTAT VIDE
+═══════════════════════════════════════ */
+.etat-vide { text-align: center; padding: 3.5rem 2rem; }
+.etat-vide-icone { font-size: 3rem; margin-bottom: .8rem; }
+.etat-vide-titre { font-family: 'Playfair Display', serif; font-size: 1.15rem; color: var(--navy); margin-bottom: .4rem; }
+.etat-vide-sous { font-size: .84rem; color: #718096; }
 
-  .rx-med-table { width: 100%; border-collapse: collapse; margin-bottom: 0.5rem; }
-  .rx-med-table th {
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-    color: #999;
-    font-weight: 600;
-    text-align: left;
-    padding: 6px 10px;
-    background: var(--light);
-    border-bottom: 1px solid var(--border);
-  }
-  .rx-med-table td {
-    padding: 9px 10px;
-    font-size: 0.85rem;
-    border-bottom: 1px solid #F0F4F8;
-    vertical-align: top;
-    color: var(--gray);
-  }
-  .rx-med-table td:first-child { font-weight: 600; color: var(--navy); }
-  .rx-med-table tr:last-child td { border-bottom: none; }
+/* ═══════════════════════════════════════
+   TOAST NOTIFICATION
+═══════════════════════════════════════ */
+.toast {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  color: #fff;
+  padding: .9rem 1.5rem;
+  border-radius: 11px;
+  font-size: .86rem;
+  font-weight: 500;
+  box-shadow: 0 8px 26px rgba(0,0,0,.22);
+  z-index: 500;
+  display: none;
+  animation: monterToast .3s ease;
+}
+.toast.visible { display: block; }
+.toast.succes { background: var(--teal); }
+.toast.erreur { background: var(--red); }
+@keyframes monterToast { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
 
-  .rx-precautions-list, .rx-measures-list {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-  }
-  .rx-precautions-list li, .rx-measures-list li {
-    font-size: 0.82rem;
-    display: flex;
-    gap: 8px;
-    line-height: 1.45;
-    color: var(--gray);
-  }
-  .rx-precautions-list li::before { content: '⚠'; font-size: 0.8rem; flex-shrink: 0; margin-top: 1px; }
-  .rx-measures-list li::before { content: '✓'; color: var(--teal); font-weight: 900; flex-shrink: 0; margin-top: 1px; }
+/* ═══════════════════════════════════════
+   IMPRESSION
+═══════════════════════════════════════ */
+@media print {
+  body { background: #fff; }
+  .entete-app, .etapes, .carte:not(#carte-etape3), .rangee-btn, .avertissement { display: none !important; }
+  #carte-etape3 { display: block !important; }
+  .papier-ordonnance { box-shadow: none; border: 1px solid #ccc; }
+  .conteneur { padding: 0; max-width: 100%; }
+}
 
-  .rx-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    margin-top: 2rem;
-    padding-top: 1.2rem;
-    border-top: 1.5px solid var(--border);
-  }
-  .rx-note { font-size: 0.72rem; color: #999; max-width: 55%; line-height: 1.5; }
-  .rx-signature { text-align: center; }
-  .rx-sig-line {
-    width: 160px;
-    height: 1px;
-    background: var(--navy);
-    margin: 0 auto 4px;
-  }
-  .rx-sig-label { font-size: 0.72rem; color: #999; }
-  .rx-sig-name { font-family: 'Playfair Display', serif; font-size: 0.88rem; color: var(--navy); font-weight: 600; margin-bottom: 2px; }
-
-  .rx-watermark {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) rotate(-30deg);
-    font-family: 'Playfair Display', serif;
-    font-size: 5rem;
-    font-weight: 700;
-    color: rgba(46,139,110,0.04);
-    white-space: nowrap;
-    pointer-events: none;
-    letter-spacing: 4px;
-    z-index: 0;
-  }
-
-  .disclaimer {
-    background: #FFF8F6;
-    border: 1px solid #F9C8B6;
-    border-radius: 8px;
-    padding: 0.9rem 1.1rem;
-    margin-top: 1.2rem;
-    font-size: 0.78rem;
-    color: #7B4B3A;
-    line-height: 1.6;
-    display: flex;
-    gap: 10px;
-    align-items: flex-start;
-  }
-  .disclaimer-icon { font-size: 1rem; flex-shrink: 0; }
-
-  /* PRINT */
-  @media print {
-    body { background: white; }
-    header, .stepper, #step1, #step2, #diagnosis-result, .btn-row-prescription, .disclaimer { display: none !important; }
-    #prescription-view { display: block !important; }
-    .prescription-paper { box-shadow: none; border: 1px solid #ccc; }
-    main { padding: 0; max-width: 100%; }
-  }
-
-  @media (max-width: 600px) {
-    .form-row { grid-template-columns: 1fr; }
-    .result-grid { grid-template-columns: 1fr; }
-    .rx-meta { flex-direction: column; }
-    .rx-header { flex-direction: column; gap: 10px; }
-    .rx-footer { flex-direction: column; gap: 1rem; }
-    .severity-row { flex-direction: column; }
-  }
+/* ═══════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════ */
+@media (max-width: 640px) {
+  .rangee-stats { grid-template-columns: 1fr 1fr; }
+  .grille-form { grid-template-columns: 1fr; }
+  .grille-resultats { grid-template-columns: 1fr; }
+  .rangee-severite { flex-direction: column; }
+  .titre-accueil { font-size: 2.1rem; }
+  .portails { flex-direction: column; align-items: center; }
+  .meta-ordonnance { flex-direction: column; }
+  .pied-ordonnance { flex-direction: column; gap: 1rem; }
+}
 </style>
 </head>
 <body>
 
-<!-- TOAST -->
+<!-- ════════════════════════════════════════
+     TOAST
+════════════════════════════════════════ -->
 <div class="toast" id="toast"></div>
 
-<header>
-  <div class="logo">
-    <div class="logo-icon">🩺</div>
-    <div class="logo-text">Derm<span>Consult</span></div>
+<!-- ════════════════════════════════════════
+     PAGE 1 : ACCUEIL
+════════════════════════════════════════ -->
+<div class="page active" id="page-accueil">
+  <div style="min-height:100vh;background:linear-gradient(135deg,#0f2740 0%,#1A3A5C 55%,#1e5a47 100%);display:flex;flex-direction:column;">
+    <div class="accueil-header">
+      <div class="logo-rond">🩺</div>
+      <div class="logo-nom">Derm<span>Consult</span></div>
+    </div>
+    <div class="accueil-centre">
+      <div class="badge-accueil">✦ Plateforme Dermatologique en Ligne ✦</div>
+      <div class="titre-accueil">Votre peau mérite<br><span>les meilleurs soins</span></div>
+      <div class="sous-titre-accueil">Consultez en ligne, obtenez un diagnostic dermatologique personnalisé et recevez votre ordonnance en quelques minutes.</div>
+      <div class="portails">
+        <div class="portail" onclick="afficherPage('page-patient')">
+          <div class="portail-icone">🧑‍⚕️</div>
+          <div class="portail-titre">Espace Patient</div>
+          <div class="portail-desc">Décrivez vos symptômes et obtenez votre consultation avec ordonnance</div>
+        </div>
+        <div class="portail admin" onclick="afficherPage('page-connexion')">
+          <div class="portail-icone">🔐</div>
+          <div class="portail-titre">Espace Administrateur</div>
+          <div class="portail-desc">Accès réservé — gestion des dossiers patients et consultations</div>
+        </div>
+      </div>
+    </div>
+    <div class="pied-accueil">© 2026 DermConsult — Plateforme d'aide au diagnostic dermatologique</div>
   </div>
-  <div class="header-badge">Consultation Dermatologie</div>
-</header>
+</div>
 
-<main>
-
-  <!-- STEPPER -->
-  <div class="stepper">
-    <div class="step active" id="s1">
-      <div class="step-circle">1</div>
-      <div class="step-label">Patient & Symptômes</div>
-    </div>
-    <div class="step-line" id="line1"></div>
-    <div class="step" id="s2">
-      <div class="step-circle">2</div>
-      <div class="step-label">Analyse</div>
-    </div>
-    <div class="step-line" id="line2"></div>
-    <div class="step" id="s3">
-      <div class="step-circle">3</div>
-      <div class="step-label">Ordonnance</div>
-    </div>
-  </div>
-
-  <!-- STEP 1 -->
-  <div class="card active" id="step1">
-    <div class="card-title">Consultation Dermatologique</div>
-    <div class="card-sub">Renseignez vos informations et décrivez vos symptômes. Notre plateforme analysera votre cas et générera un diagnostic dermatologique.</div>
-
-    <div class="form-row">
-      <div class="form-group">
-        <label>Prénom & Nom</label>
-        <input type="text" id="patient-name" placeholder="Ex. Aminata Diallo">
+<!-- ════════════════════════════════════════
+     PAGE 2 : CONNEXION ADMIN
+════════════════════════════════════════ -->
+<div class="page" id="page-connexion">
+  <div style="min-height:100vh;background:linear-gradient(135deg,#0f2740,#1A3A5C);display:flex;align-items:center;justify-content:center;padding:1.5rem;">
+    <div class="boite-connexion">
+      <div class="connexion-logo">
+        <div class="logo-rond" style="width:40px;height:40px;font-size:18px;">🩺</div>
+        <div style="font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:var(--navy);">Derm<span style="color:var(--teal);">Consult</span></div>
       </div>
-      <div class="form-group">
-        <label>Âge</label>
-        <input type="number" id="patient-age" placeholder="Ex. 32" min="1" max="120">
-      </div>
-      <div class="form-group">
-        <label>Sexe</label>
-        <select id="patient-sex">
-          <option value="">— Sélectionner —</option>
-          <option>Féminin</option>
-          <option>Masculin</option>
-          <option>Autre</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Type de peau</label>
-        <select id="skin-type">
-          <option value="">— Sélectionner —</option>
-          <option>Peau claire</option>
-          <option>Peau mate</option>
-          <option>Peau foncée</option>
-          <option>Peau très foncée</option>
-        </select>
-      </div>
-    </div>
-
-    <div style="margin-bottom:1.5rem;">
-      <div class="symptom-section">
-        <div class="symptom-section-title">Localisation des symptômes</div>
-        <div class="tags-grid" id="location-tags">
-          <div class="tag" onclick="toggleTag(this,'location')">Visage</div>
-          <div class="tag" onclick="toggleTag(this,'location')">Cuir chevelu</div>
-          <div class="tag" onclick="toggleTag(this,'location')">Cou</div>
-          <div class="tag" onclick="toggleTag(this,'location')">Torse</div>
-          <div class="tag" onclick="toggleTag(this,'location')">Dos</div>
-          <div class="tag" onclick="toggleTag(this,'location')">Bras</div>
-          <div class="tag" onclick="toggleTag(this,'location')">Mains</div>
-          <div class="tag" onclick="toggleTag(this,'location')">Jambes</div>
-          <div class="tag" onclick="toggleTag(this,'location')">Pieds</div>
-          <div class="tag" onclick="toggleTag(this,'location')">Aines / plis</div>
-          <div class="tag" onclick="toggleTag(this,'location')">Tout le corps</div>
+      <div class="connexion-titre">Espace Administrateur</div>
+      <div class="connexion-sous">Connexion sécurisée — accès réservé au personnel médical</div>
+      <div class="erreur-connexion" id="erreur-login">Identifiants incorrects. Veuillez réessayer.</div>
+      <div style="display:flex;flex-direction:column;gap:1rem;">
+        <div class="champ">
+          <label>Identifiant</label>
+          <input type="text" id="login-identifiant" placeholder="admin">
         </div>
-      </div>
-
-      <div class="symptom-section">
-        <div class="symptom-section-title">Aspect visuel observé</div>
-        <div class="tags-grid" id="visual-tags">
-          <div class="tag" onclick="toggleTag(this,'visual')">Rougeurs</div>
-          <div class="tag" onclick="toggleTag(this,'visual')">Plaques</div>
-          <div class="tag" onclick="toggleTag(this,'visual')">Boutons / papules</div>
-          <div class="tag" onclick="toggleTag(this,'visual')">Pustules (pus)</div>
-          <div class="tag" onclick="toggleTag(this,'visual')">Vésicules (cloques)</div>
-          <div class="tag" onclick="toggleTag(this,'visual')">Squames (peau qui pèle)</div>
-          <div class="tag" onclick="toggleTag(this,'visual')">Taches brunes</div>
-          <div class="tag" onclick="toggleTag(this,'visual')">Taches blanches</div>
-          <div class="tag" onclick="toggleTag(this,'visual')">Croûtes</div>
-          <div class="tag" onclick="toggleTag(this,'visual')">Gonflements / œdème</div>
-          <div class="tag" onclick="toggleTag(this,'visual')">Ulcérations</div>
-          <div class="tag" onclick="toggleTag(this,'visual')">Peau sèche / craquelée</div>
+        <div class="champ">
+          <label>Mot de passe</label>
+          <input type="password" id="login-mdp" placeholder="••••••••" onkeydown="if(event.key==='Enter')seConnecter()">
         </div>
+        <button class="btn btn-principal btn-plein" onclick="seConnecter()">Se connecter →</button>
       </div>
-
-      <div class="symptom-section">
-        <div class="symptom-section-title">Sensations ressenties</div>
-        <div class="tags-grid" id="sensation-tags">
-          <div class="tag" onclick="toggleTag(this,'sensation')">Démangeaisons (prurit)</div>
-          <div class="tag" onclick="toggleTag(this,'sensation')">Douleurs / brûlures</div>
-          <div class="tag" onclick="toggleTag(this,'sensation')">Picotements</div>
-          <div class="tag" onclick="toggleTag(this,'sensation')">Chaleur locale</div>
-          <div class="tag" onclick="toggleTag(this,'sensation')">Sans sensation</div>
-          <div class="tag" onclick="toggleTag(this,'sensation')">Saignement</div>
-          <div class="tag" onclick="toggleTag(this,'sensation')">Suintement</div>
-        </div>
-      </div>
-
-      <div class="symptom-section">
-        <div class="symptom-section-title">Durée & évolution</div>
-        <div class="tags-grid" id="duration-tags">
-          <div class="tag" onclick="toggleTag(this,'duration')">Moins d'une semaine</div>
-          <div class="tag" onclick="toggleTag(this,'duration')">1 à 4 semaines</div>
-          <div class="tag" onclick="toggleTag(this,'duration')">1 à 6 mois</div>
-          <div class="tag" onclick="toggleTag(this,'duration')">Plus de 6 mois</div>
-          <div class="tag" onclick="toggleTag(this,'duration')">Récurrent / cyclique</div>
-          <div class="tag" onclick="toggleTag(this,'duration')">Aggravation progressive</div>
-          <div class="tag" onclick="toggleTag(this,'duration')">Amélioration spontanée</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="form-group" style="margin-bottom:1rem;">
-      <label>Sévérité estimée</label>
-      <div class="severity-row">
-        <div class="sev-btn" onclick="setSeverity('Légère', this)">😌 Légère</div>
-        <div class="sev-btn" onclick="setSeverity('Modérée', this)">😐 Modérée</div>
-        <div class="sev-btn" onclick="setSeverity('Sévère', this)">😣 Sévère</div>
-      </div>
-    </div>
-
-    <div class="form-group form-group full">
-      <label>Informations complémentaires (antécédents, traitements, allergies…)</label>
-      <textarea id="extra-info" placeholder="Ex : Antécédents d'eczéma, allergie à la pénicilline, première occurrence..."></textarea>
-    </div>
-
-    <div class="btn-row">
-      <button class="btn btn-primary" onclick="startAnalysis()">Lancer la consultation →</button>
+      <div class="indice-connexion">Identifiants : <strong>admin</strong> / <strong>derm2026</strong></div>
+      <span class="lien-retour" onclick="afficherPage('page-accueil')">← Retour à l'accueil</span>
     </div>
   </div>
+</div>
 
-  <!-- STEP 2 : Loading + Result -->
-  <div class="card" id="step2">
-
-    <div class="loading-overlay show" id="loading-section">
-      <div class="spinner"></div>
-      <div>
-        <div class="loading-text">Analyse dermatologique en cours…</div>
-        <div class="loading-sub" id="loading-msg">Consultation des bases de données cliniques…</div>
-      </div>
+<!-- ════════════════════════════════════════
+     PAGE 3 : PATIENT
+════════════════════════════════════════ -->
+<div class="page" id="page-patient">
+  <div class="entete-app">
+    <div class="entete-logo">
+      <div class="entete-logo-rond">🩺</div>
+      <div class="entete-logo-nom">Derm<span>Consult</span></div>
     </div>
-
-    <div id="diagnosis-result" style="display:none;">
-      <div class="card-title" style="margin-bottom:0.3rem;">Résultat de la consultation</div>
-      <div class="card-sub" style="margin-bottom:1.2rem;">Diagnostic basé sur les symptômes fournis — à confirmer par un professionnel de santé.</div>
-
-      <div class="diagnosis-banner">
-        <div class="diagnosis-label">Diagnostic probable</div>
-        <div class="diagnosis-name" id="diag-name">—</div>
-        <div id="diag-desc" style="font-size:0.85rem; opacity:0.9; margin-top:5px; line-height:1.5;"></div>
-        <div class="confidence-bar-wrap">
-          <div class="confidence-bar"><div class="confidence-fill" id="conf-fill" style="width:0%"></div></div>
-          <div class="confidence-pct" id="conf-pct"></div>
-        </div>
-      </div>
-
-      <div class="result-grid">
-        <div class="result-box">
-          <div class="result-box-title">💊 Médicaments recommandés</div>
-          <ul id="res-meds"></ul>
-        </div>
-        <div class="result-box">
-          <div class="result-box-title">⚠️ Précautions</div>
-          <ul id="res-precautions"></ul>
-        </div>
-        <div class="result-box full-width">
-          <div class="result-box-title">✅ Mesures à prendre</div>
-          <ul id="res-measures"></ul>
-        </div>
-      </div>
-
-      <div class="btn-row">
-        <button class="btn btn-secondary" onclick="resetApp()">← Nouvelle consultation</button>
-        <button class="btn btn-navy" onclick="showPrescription()">Générer l'ordonnance →</button>
-      </div>
-    </div>
+    <div class="entete-badge">Espace Patient</div>
+    <button class="btn-entete" onclick="afficherPage('page-accueil')">← Accueil</button>
   </div>
 
-  <!-- STEP 3 -->
-  <div class="card" id="step3">
-    <div class="card-title" style="margin-bottom:0.3rem;">Ordonnance médicale</div>
-    <div class="card-sub" style="margin-bottom:1.5rem;">Document généré à titre informatif — à valider par un médecin dermatologiste.</div>
+  <div class="conteneur">
+    <!-- ÉTAPES -->
+    <div class="etapes">
+      <div class="etape active" id="etape1">
+        <div class="etape-cercle">1</div>
+        <div class="etape-texte">Symptômes</div>
+      </div>
+      <div class="etape-ligne" id="ligne1"></div>
+      <div class="etape" id="etape2">
+        <div class="etape-cercle">2</div>
+        <div class="etape-texte">Diagnostic</div>
+      </div>
+      <div class="etape-ligne" id="ligne2"></div>
+      <div class="etape" id="etape3">
+        <div class="etape-cercle">3</div>
+        <div class="etape-texte">Ordonnance</div>
+      </div>
+    </div>
 
-    <div id="prescription-view" class="show">
-      <div class="prescription-paper">
-        <div class="rx-watermark">DermConsult</div>
+    <!-- ÉTAPE 1 : FORMULAIRE -->
+    <div class="carte" id="carte-etape1">
+      <div class="carte-titre">Nouvelle Consultation</div>
+      <div class="carte-sous">Renseignez vos informations personnelles puis sélectionnez vos symptômes.</div>
 
-        <div class="rx-header">
+      <div class="grille-form">
+        <div class="champ">
+          <label>Prénom & Nom</label>
+          <input type="text" id="p-nom" placeholder="Ex. Aminata Diallo">
+        </div>
+        <div class="champ">
+          <label>Âge</label>
+          <input type="number" id="p-age" placeholder="32" min="1" max="120">
+        </div>
+        <div class="champ">
+          <label>Sexe</label>
+          <select id="p-sexe">
+            <option value="">— Sélectionner —</option>
+            <option>Féminin</option>
+            <option>Masculin</option>
+            <option>Autre</option>
+          </select>
+        </div>
+        <div class="champ">
+          <label>Type de peau</label>
+          <select id="p-peau">
+            <option value="">— Sélectionner —</option>
+            <option>Peau claire</option>
+            <option>Peau mate</option>
+            <option>Peau foncée</option>
+            <option>Peau très foncée</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="bloc-symptome">
+        <div class="bloc-symptome-titre">🎯 Localisation des symptômes</div>
+        <div class="grille-tags">
+          <div class="tag" onclick="basculerTag(this,'localisation')">Visage</div>
+          <div class="tag" onclick="basculerTag(this,'localisation')">Cuir chevelu</div>
+          <div class="tag" onclick="basculerTag(this,'localisation')">Cou</div>
+          <div class="tag" onclick="basculerTag(this,'localisation')">Torse</div>
+          <div class="tag" onclick="basculerTag(this,'localisation')">Dos</div>
+          <div class="tag" onclick="basculerTag(this,'localisation')">Bras</div>
+          <div class="tag" onclick="basculerTag(this,'localisation')">Mains</div>
+          <div class="tag" onclick="basculerTag(this,'localisation')">Jambes</div>
+          <div class="tag" onclick="basculerTag(this,'localisation')">Pieds</div>
+          <div class="tag" onclick="basculerTag(this,'localisation')">Aines / plis</div>
+          <div class="tag" onclick="basculerTag(this,'localisation')">Tout le corps</div>
+        </div>
+      </div>
+
+      <div class="bloc-symptome">
+        <div class="bloc-symptome-titre">🔍 Aspect visuel observé</div>
+        <div class="grille-tags">
+          <div class="tag" onclick="basculerTag(this,'visuel')">Rougeurs</div>
+          <div class="tag" onclick="basculerTag(this,'visuel')">Plaques</div>
+          <div class="tag" onclick="basculerTag(this,'visuel')">Boutons / papules</div>
+          <div class="tag" onclick="basculerTag(this,'visuel')">Pustules (pus)</div>
+          <div class="tag" onclick="basculerTag(this,'visuel')">Vésicules (cloques)</div>
+          <div class="tag" onclick="basculerTag(this,'visuel')">Squames (peau qui pèle)</div>
+          <div class="tag" onclick="basculerTag(this,'visuel')">Taches brunes</div>
+          <div class="tag" onclick="basculerTag(this,'visuel')">Taches blanches</div>
+          <div class="tag" onclick="basculerTag(this,'visuel')">Croûtes</div>
+          <div class="tag" onclick="basculerTag(this,'visuel')">Gonflements / œdème</div>
+          <div class="tag" onclick="basculerTag(this,'visuel')">Ulcérations</div>
+          <div class="tag" onclick="basculerTag(this,'visuel')">Peau sèche / craquelée</div>
+        </div>
+      </div>
+
+      <div class="bloc-symptome">
+        <div class="bloc-symptome-titre">💬 Sensations ressenties</div>
+        <div class="grille-tags">
+          <div class="tag" onclick="basculerTag(this,'sensation')">Démangeaisons (prurit)</div>
+          <div class="tag" onclick="basculerTag(this,'sensation')">Douleurs / brûlures</div>
+          <div class="tag" onclick="basculerTag(this,'sensation')">Picotements</div>
+          <div class="tag" onclick="basculerTag(this,'sensation')">Chaleur locale</div>
+          <div class="tag" onclick="basculerTag(this,'sensation')">Sans sensation</div>
+          <div class="tag" onclick="basculerTag(this,'sensation')">Saignement</div>
+          <div class="tag" onclick="basculerTag(this,'sensation')">Suintement</div>
+        </div>
+      </div>
+
+      <div class="bloc-symptome">
+        <div class="bloc-symptome-titre">⏱ Durée & évolution</div>
+        <div class="grille-tags">
+          <div class="tag" onclick="basculerTag(this,'duree')">Moins d'une semaine</div>
+          <div class="tag" onclick="basculerTag(this,'duree')">1 à 4 semaines</div>
+          <div class="tag" onclick="basculerTag(this,'duree')">1 à 6 mois</div>
+          <div class="tag" onclick="basculerTag(this,'duree')">Plus de 6 mois</div>
+          <div class="tag" onclick="basculerTag(this,'duree')">Récurrent / cyclique</div>
+          <div class="tag" onclick="basculerTag(this,'duree')">Aggravation progressive</div>
+        </div>
+      </div>
+
+      <div class="champ" style="margin-bottom:1rem;">
+        <label>Sévérité estimée</label>
+        <div class="rangee-severite">
+          <div class="btn-sev" onclick="choisirSeverite('Légère',this)">😌 Légère</div>
+          <div class="btn-sev" onclick="choisirSeverite('Modérée',this)">😐 Modérée</div>
+          <div class="btn-sev" onclick="choisirSeverite('Sévère',this)">😣 Sévère</div>
+        </div>
+      </div>
+
+      <div class="champ plein">
+        <label>Informations complémentaires</label>
+        <textarea id="p-extra" placeholder="Antécédents médicaux, allergies connues, traitements en cours…"></textarea>
+      </div>
+
+      <div class="rangee-btn">
+        <button class="btn btn-principal" onclick="lancerAnalyse()">Analyser mes symptômes →</button>
+      </div>
+    </div>
+
+    <!-- ÉTAPE 2 : DIAGNOSTIC -->
+    <div class="carte" id="carte-etape2" style="display:none;">
+      <div class="zone-chargement visible" id="zone-chargement">
+        <div class="roue"></div>
+        <div class="texte-chargement">Analyse dermatologique en cours…</div>
+        <div class="sous-texte-chargement" id="msg-chargement">Consultation des bases de données cliniques…</div>
+      </div>
+
+      <div id="contenu-diagnostic" style="display:none;">
+        <div class="carte-titre" style="margin-bottom:.3rem;">Résultat du diagnostic</div>
+        <div class="carte-sous" style="margin-bottom:1rem;">À confirmer par un dermatologue qualifié.</div>
+
+        <div class="banniere-diag">
+          <div class="diag-etiquette">Diagnostic probable</div>
+          <div class="diag-nom" id="diag-nom">—</div>
+          <div class="diag-desc" id="diag-desc"></div>
+          <div class="barre-conf-wrap">
+            <div class="barre-conf">
+              <div class="barre-conf-remplie" id="barre-conf" style="width:0%"></div>
+            </div>
+            <span style="font-size:.8rem;opacity:.9;" id="pct-conf"></span>
+          </div>
+        </div>
+
+        <div class="grille-resultats">
+          <div class="boite-resultat">
+            <div class="boite-resultat-titre">💊 Médicaments recommandés</div>
+            <ul id="liste-medicaments"></ul>
+          </div>
+          <div class="boite-resultat">
+            <div class="boite-resultat-titre">⚠️ Précautions</div>
+            <ul id="liste-precautions"></ul>
+          </div>
+          <div class="boite-resultat pleine-largeur">
+            <div class="boite-resultat-titre">✅ Mesures à prendre</div>
+            <ul id="liste-mesures"></ul>
+          </div>
+        </div>
+
+        <div class="rangee-btn">
+          <button class="btn btn-secondaire" onclick="reinitialiser()">← Recommencer</button>
+          <button class="btn btn-sombre" onclick="creerOrdonnance()">Générer l'ordonnance →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ÉTAPE 3 : ORDONNANCE -->
+    <div class="carte" id="carte-etape3" style="display:none;">
+      <div class="carte-titre" style="margin-bottom:.3rem;">Ordonnance médicale</div>
+      <div class="carte-sous" style="margin-bottom:1.2rem;">Document informatif — à valider par un médecin dermatologiste.</div>
+
+      <div class="papier-ordonnance">
+        <div class="filigrane">DermConsult</div>
+        <div class="entete-ordonnance">
           <div>
-            <div class="rx-clinic-name">Cabinet DermConsult</div>
-            <div class="rx-clinic-sub">Consultation dermatologique assistée par des professionnels de santé</div>
-            <div class="rx-clinic-sub" style="margin-top:4px;">Plateforme en ligne • www.dermconsult.app</div>
+            <div class="ordonnance-cabinet">Cabinet DermConsult</div>
+            <div class="ordonnance-sous">Consultation dermatologique assistée par Intelligence Artificielle</div>
+            <div class="ordonnance-sous" style="margin-top:3px;">📍 Plateforme en ligne • dermconsult.app</div>
           </div>
-          <div class="rx-logo">🩺</div>
+          <div class="ordonnance-logo">🩺</div>
         </div>
-
-        <div class="rx-body">
-          <div class="rx-meta">
-            <div class="rx-meta-block">
-              <div class="rx-meta-label">Patient</div>
-              <div class="rx-meta-value" id="rx-patient-name">—</div>
-            </div>
-            <div class="rx-meta-block">
-              <div class="rx-meta-label">Âge / Sexe</div>
-              <div class="rx-meta-value" id="rx-patient-age">—</div>
-            </div>
-            <div class="rx-meta-block">
-              <div class="rx-meta-label">Type de peau</div>
-              <div class="rx-meta-value" id="rx-skin-type">—</div>
-            </div>
-            <div class="rx-meta-block">
-              <div class="rx-meta-label">Date</div>
-              <div class="rx-meta-value" id="rx-date">—</div>
-            </div>
-            <div class="rx-meta-block">
-              <div class="rx-meta-label">N° Consultation</div>
-              <div class="rx-meta-value" id="rx-num">—</div>
-            </div>
+        <div class="corps-ordonnance">
+          <div class="meta-ordonnance">
+            <div class="meta-bloc"><div class="meta-etiquette">Patient</div><div class="meta-valeur" id="rx-nom">—</div></div>
+            <div class="meta-bloc"><div class="meta-etiquette">Âge / Sexe</div><div class="meta-valeur" id="rx-age">—</div></div>
+            <div class="meta-bloc"><div class="meta-etiquette">Type de peau</div><div class="meta-valeur" id="rx-peau">—</div></div>
+            <div class="meta-bloc"><div class="meta-etiquette">Date</div><div class="meta-valeur" id="rx-date">—</div></div>
+            <div class="meta-bloc"><div class="meta-etiquette">N° Consultation</div><div class="meta-valeur" id="rx-numero">—</div></div>
           </div>
-
-          <div class="rx-diagnosis-section">
-            <div class="rx-dx-label">Diagnostic retenu</div>
-            <div class="rx-dx-name" id="rx-diag-name">—</div>
-            <div style="font-size:0.8rem; color:#4A5568; margin-top:4px;" id="rx-diag-desc"></div>
+          <div class="bloc-diagnostic-rx">
+            <div class="rx-dx-etiquette">Diagnostic retenu</div>
+            <div class="rx-dx-nom" id="rx-diag-nom">—</div>
+            <div class="rx-dx-desc" id="rx-diag-desc"></div>
           </div>
-
-          <div class="rx-section-title">Prescription médicamenteuse</div>
-          <table class="rx-med-table">
+          <div class="rx-section-titre">Prescription médicamenteuse</div>
+          <table class="tableau-rx">
             <thead>
-              <tr>
-                <th>Médicament</th>
-                <th>Dosage</th>
-                <th>Posologie</th>
-                <th>Durée</th>
-              </tr>
+              <tr><th>Médicament</th><th>Dosage</th><th>Posologie</th><th>Durée</th></tr>
             </thead>
-            <tbody id="rx-med-tbody"></tbody>
+            <tbody id="rx-tableau-corps"></tbody>
           </table>
-
-          <div class="rx-section-title">Précautions importantes</div>
-          <ul class="rx-precautions-list" id="rx-precautions"></ul>
-
-          <div class="rx-section-title">Mesures hygiéno-diététiques & suivi</div>
-          <ul class="rx-measures-list" id="rx-measures"></ul>
-
-          <div class="rx-footer">
-            <div class="rx-note">
-              Ce document est généré par un système d'aide au diagnostic par des professionnels de santé. Il ne remplace pas une consultation médicale physique. Consultez impérativement un médecin dermatologiste pour valider ce diagnostic et adapter ce traitement à votre situation.
-            </div>
-            <div class="rx-signature">
-              <div class="rx-sig-name">Dr. IA DermConsult</div>
-              <div class="rx-sig-line"></div>
-              <div class="rx-sig-label">Signature électronique</div>
+          <div class="rx-section-titre">Précautions importantes</div>
+          <ul class="liste-rx precautions" id="rx-precautions"></ul>
+          <div class="rx-section-titre">Mesures hygiéno-diététiques & suivi</div>
+          <ul class="liste-rx mesures" id="rx-mesures"></ul>
+          <div class="pied-ordonnance">
+            <div class="note-ordonnance">Document généré par IA à titre informatif uniquement. Ne remplace pas une consultation médicale physique. Consultez impérativement un dermatologue pour valider ce diagnostic et adapter le traitement.</div>
+            <div class="signature">
+              <div class="signature-nom">Dr. IA DermConsult</div>
+              <div class="signature-ligne"></div>
+              <div class="signature-label">Signature électronique</div>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <div class="disclaimer">
-      <span class="disclaimer-icon">⚠️</span>
-      <span><strong>Avertissement médical :</strong> Ce document est généré à titre informatif par un système d'intelligence artificielle et ne constitue pas un acte médical légal. Consultez un dermatologue qualifié avant tout traitement. En cas d'urgence ou de symptômes graves, contactez les services médicaux d'urgence.</span>
-    </div>
+      <div class="avertissement">
+        <span>⚠️</span>
+        <span><strong>Avertissement médical :</strong> Ce document est généré par un système d'intelligence artificielle et ne constitue pas un acte médical légal. Consultez un dermatologue qualifié avant tout traitement. En cas d'urgence, contactez les services médicaux.</span>
+      </div>
 
-    <div class="btn-row btn-row-prescription">
-      <button class="btn btn-secondary" onclick="goToStep(2)">← Retour au diagnostic</button>
-      <button class="btn btn-secondary" onclick="resetApp()">Nouvelle consultation</button>
-      <button class="btn btn-print" onclick="window.print()">🖨 Imprimer l'ordonnance</button>
+      <div class="rangee-btn">
+        <button class="btn btn-secondaire" onclick="allerEtape(2)">← Retour</button>
+        <button class="btn btn-secondaire" onclick="reinitialiser()">Nouvelle consultation</button>
+        <button class="btn btn-imprimer" onclick="window.print()">🖨 Imprimer l'ordonnance</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     PAGE 4 : ADMINISTRATION
+════════════════════════════════════════ -->
+<div class="page" id="page-admin">
+  <div class="entete-app">
+    <div class="entete-logo">
+      <div class="entete-logo-rond">🩺</div>
+      <div class="entete-logo-nom">Derm<span>Consult</span></div>
+    </div>
+    <div class="entete-badge">🔐 Administration</div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span style="font-size:.78rem;color:rgba(255,255,255,.6);">👤 admin</span>
+      <button class="btn-deconnexion" onclick="seDeconnecter()">Déconnexion</button>
     </div>
   </div>
 
-</main>
+  <div class="conteneur">
 
+    <!-- STATISTIQUES -->
+    <div class="rangee-stats">
+      <div class="carte-stat c1">
+        <div class="stat-chiffre" id="stat-total">0</div>
+        <div class="stat-label">Total consultations</div>
+      </div>
+      <div class="carte-stat c2">
+        <div class="stat-chiffre" id="stat-aujourd-hui">0</div>
+        <div class="stat-label">Aujourd'hui</div>
+      </div>
+      <div class="carte-stat c3">
+        <div class="stat-chiffre" id="stat-severes">0</div>
+        <div class="stat-label">Cas sévères</div>
+      </div>
+      <div class="carte-stat c4">
+        <div class="stat-chiffre" id="stat-maladies">0</div>
+        <div class="stat-label">Maladies distinctes</div>
+      </div>
+    </div>
+
+    <!-- GRAPHIQUE -->
+    <div class="carte" id="carte-graphique" style="display:none;">
+      <div style="font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--navy);font-weight:700;margin-bottom:1rem;">📊 Diagnostics les plus fréquents</div>
+      <div id="contenu-graphique"></div>
+    </div>
+
+    <!-- BARRE OUTILS -->
+    <div class="barre-outils">
+      <input type="text" class="champ-recherche" id="recherche" placeholder="🔍 Rechercher un patient, un diagnostic…" oninput="afficherTableau()">
+      <div style="display:flex;gap:.7rem;align-items:center;flex-wrap:wrap;">
+        <select class="select-filtre" id="filtre-severite" onchange="afficherTableau()">
+          <option value="">Toutes sévérités</option>
+          <option>Légère</option>
+          <option>Modérée</option>
+          <option>Sévère</option>
+        </select>
+        <select class="select-filtre" id="filtre-diagnostic" onchange="afficherTableau()">
+          <option value="">Tous diagnostics</option>
+        </select>
+        <button class="btn btn-danger btn-petit" onclick="toutSupprimier()">🗑 Tout effacer</button>
+      </div>
+    </div>
+
+    <!-- TABLEAU -->
+    <div class="enveloppe-tableau">
+      <div class="barre-tableau">
+        <div class="compteur-tableau" id="compteur">0 enregistrement(s)</div>
+      </div>
+      <div id="contenu-tableau"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     MODAL DÉTAIL CONSULTATION
+════════════════════════════════════════ -->
+<div class="fond-modal" id="modal" onclick="fermerModalFond(event)">
+  <div class="modal">
+    <div class="modal-entete">
+      <div class="modal-titre" id="modal-titre">Détail consultation</div>
+      <button class="modal-fermer" onclick="fermerModal()">✕</button>
+    </div>
+    <div class="modal-corps" id="modal-corps"></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════ -->
 <script>
-// ══════════════════════════════════
-// SUPABASE CONFIG
-// ══════════════════════════════════
-const SUPABASE_URL = 'https://rlloxxwwnwljbxtrwmobv.supabase.co';
+/* ══════════════════════════════════════
+   CONFIGURATION SUPABASE
+══════════════════════════════════════ */
+const SUPABASE_URL = 'https://rlkxxwwnwljbxtrwmobv.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsa3h4d3dud2xqYnh0cndtb2J2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1OTQ2MjYsImV4cCI6MjA5NzE3MDYyNn0.nb7hnMkcvvuNnm_rfZRttf16ph_iGwSp66PWPjt3bQM';
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// ══════════════════════════════════
-// TOAST
-// ══════════════════════════════════
-function showToast(msg, type = 'success') {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast show ' + type;
-  setTimeout(() => t.className = 'toast', 3000);
+/* ══════════════════════════════════════
+   ÉTAT GLOBAL
+══════════════════════════════════════ */
+let tagsChoisis = { localisation:[], visuel:[], sensation:[], duree:[] };
+let severiteChoisie = '';
+let donnesDiag = null;
+let donneesAdmin = [];
+
+/* ══════════════════════════════════════
+   NAVIGATION ENTRE PAGES
+══════════════════════════════════════ */
+function afficherPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// ══════════════════════════════════
-// STATE
-// ══════════════════════════════════
-let selectedTags = { location: [], visual: [], sensation: [], duration: [] };
-let severity = '';
-let diagnosisData = null;
+/* ══════════════════════════════════════
+   TOAST
+══════════════════════════════════════ */
+function afficherToast(message, type = 'succes') {
+  const t = document.getElementById('toast');
+  t.textContent = message;
+  t.className = 'toast visible ' + type;
+  setTimeout(() => t.className = 'toast', 3500);
+}
 
-// ══════════════════════════════════
-// DISEASE DATABASE
-// ══════════════════════════════════
-const SKIN_DISEASES = [
+/* ══════════════════════════════════════
+   AUTHENTIFICATION ADMIN
+══════════════════════════════════════ */
+function seConnecter() {
+  const id = document.getElementById('login-identifiant').value.trim();
+  const mdp = document.getElementById('login-mdp').value;
+  if (id === 'admin' && mdp === 'derm2026') {
+    document.getElementById('erreur-login').classList.remove('visible');
+    document.getElementById('login-identifiant').value = '';
+    document.getElementById('login-mdp').value = '';
+    chargerDonneesAdmin();
+    afficherPage('page-admin');
+  } else {
+    document.getElementById('erreur-login').classList.add('visible');
+  }
+}
+
+function seDeconnecter() {
+  afficherPage('page-accueil');
+}
+
+/* ══════════════════════════════════════
+   BASE DE MALADIES DERMATOLOGIQUES
+══════════════════════════════════════ */
+const MALADIES = [
   {
     id: 'acne',
-    name: 'Acné vulgaire',
-    description: 'Affection cutanée chronique des follicules pilo-sébacés, caractérisée par des comédons, papules et pustules.',
-    keywords: ['Visage', 'Torse', 'Dos', 'Boutons / papules', 'Pustules (pus)', 'Rougeurs', 'Peau sèche / craquelée'],
-    medications: [
-      { name: 'Adapalène 0,1% gel', dosage: '0,1%', posologie: '1 application/soir', duree: '3 mois' },
-      { name: 'Peroxyde de benzoyle 5%', dosage: '5%', posologie: '1 application/matin', duree: '3 mois' },
-      { name: 'Doxycycline', dosage: '100 mg', posologie: '1 comprimé/jour au repas', duree: '3 mois' }
+    nom: 'Acné vulgaire',
+    description: 'Affection chronique des follicules pilo-sébacés caractérisée par des comédons, papules et pustules.',
+    motsCles: ['Visage','Torse','Dos','Boutons / papules','Pustules (pus)','Rougeurs','Peau sèche / craquelée'],
+    medicaments: [
+      { nom:'Adapalène 0,1% gel', dosage:'0,1%', posologie:'1 application/soir', duree:'3 mois' },
+      { nom:'Peroxyde de benzoyle 5%', dosage:'5%', posologie:'1 application/matin', duree:'3 mois' },
+      { nom:'Doxycycline', dosage:'100 mg', posologie:'1 comprimé/jour au repas', duree:'3 mois' }
     ],
-    precautions: ['Éviter l\'exposition solaire sans protection SPF 50+', 'Ne pas gratter ou percer les boutons', 'Éviter les produits occlusifs et gras', 'Contre-indiqué chez la femme enceinte (rétinoïdes)'],
-    measures: ['Nettoyage doux matin et soir avec un gel sans savon', 'Hydratation légère non comédogène', 'Alimentation équilibrée, réduire sucres raffinés et produits laitiers', 'Réévaluation dermatologique dans 3 mois', 'Changer la taie d\'oreiller tous les 2 jours']
+    precautions: ['Éviter exposition solaire sans SPF 50+','Ne pas gratter ou percer les boutons','Éviter les produits occlusifs et gras','Contre-indiqué chez la femme enceinte (rétinoïdes)'],
+    mesures: ['Nettoyage doux matin et soir avec gel sans savon','Hydratation légère non comédogène','Alimentation équilibrée, réduire sucres raffinés','Réévaluation dermatologique dans 3 mois']
   },
   {
     id: 'eczema',
-    name: 'Dermatite atopique (Eczéma)',
-    description: 'Maladie inflammatoire chronique de la peau caractérisée par des poussées de plaques rouges prurigineuses.',
-    keywords: ['Démangeaisons (prurit)', 'Plaques', 'Rougeurs', 'Peau sèche / craquelée', 'Bras', 'Jambes', 'Cou', 'Squames (peau qui pèle)'],
-    medications: [
-      { name: 'Hydrocortisone 1% crème', dosage: '1%', posologie: '2 applications/jour sur lésions', duree: '10 jours' },
-      { name: 'Tacrolimus 0,1% pommade', dosage: '0,1%', posologie: '2 applications/jour', duree: '3 semaines' },
-      { name: 'Cetirizine', dosage: '10 mg', posologie: '1 comprimé/soir', duree: '2 semaines' }
+    nom: 'Dermatite atopique (Eczéma)',
+    description: 'Maladie inflammatoire chronique caractérisée par des poussées de plaques rouges très prurigineuses.',
+    motsCles: ['Démangeaisons (prurit)','Plaques','Rougeurs','Peau sèche / craquelée','Bras','Jambes','Cou','Squames (peau qui pèle)'],
+    medicaments: [
+      { nom:'Hydrocortisone 1% crème', dosage:'1%', posologie:'2 applications/jour sur lésions', duree:'10 jours' },
+      { nom:'Tacrolimus 0,1% pommade', dosage:'0,1%', posologie:'2 applications/jour', duree:'3 semaines' },
+      { nom:'Cétirizine', dosage:'10 mg', posologie:'1 comprimé/soir', duree:'2 semaines' }
     ],
-    precautions: ['Éviter les bains chauds prolongés', 'Ne pas utiliser de savons parfumés', 'Éviter les vêtements synthétiques', 'Ne pas gratter malgré les démangeaisons'],
-    measures: ['Hydratation intense avec émollient 2x/jour (Corps entier)', 'Bains tièdes courts (5-10 min) avec huile de bain', 'Identifier et éviter les facteurs déclenchants (acariens, pollens, aliments)', 'Porter des vêtements en coton', 'Humidificateur dans la chambre si air sec']
+    precautions: ['Éviter les bains chauds prolongés','Ne pas utiliser de savons parfumés','Éviter les vêtements synthétiques','Ne pas gratter malgré les démangeaisons'],
+    mesures: ['Hydratation intense avec émollient 2x/jour','Bains tièdes courts avec huile de bain','Identifier et éviter les facteurs déclenchants','Porter des vêtements en coton']
   },
   {
     id: 'psoriasis',
-    name: 'Psoriasis en plaques',
-    description: 'Dermatose inflammatoire chronique auto-immune caractérisée par des plaques érythémato-squameuses bien délimitées.',
-    keywords: ['Plaques', 'Squames (peau qui pèle)', 'Rougeurs', 'Démangeaisons (prurit)', 'Dos', 'Cuir chevelu', 'Jambes'],
-    medications: [
-      { name: 'Calcipotriol + Bétaméthasone gel', dosage: 'Standard', posologie: '1 application/jour', duree: '4 semaines' },
-      { name: 'Méthotrexate (si sévère)', dosage: '7,5-25 mg', posologie: '1 fois/semaine', duree: '3-6 mois' },
-      { name: 'Acide salicylique 5% pommade', dosage: '5%', posologie: '1 application/soir sur plaques', duree: '3 semaines' }
+    nom: 'Psoriasis en plaques',
+    description: 'Dermatose inflammatoire chronique auto-immune avec plaques érythémato-squameuses bien délimitées.',
+    motsCles: ['Plaques','Squames (peau qui pèle)','Rougeurs','Démangeaisons (prurit)','Dos','Cuir chevelu','Jambes'],
+    medicaments: [
+      { nom:'Calcipotriol + Bétaméthasone gel', dosage:'Standard', posologie:'1 application/jour', duree:'4 semaines' },
+      { nom:'Méthotrexate (si sévère)', dosage:'7,5-25 mg', posologie:'1 fois/semaine', duree:'3-6 mois' },
+      { nom:'Acide salicylique 5% pommade', dosage:'5%', posologie:'1 application/soir sur plaques', duree:'3 semaines' }
     ],
-    precautions: ['Suivi biologique si Méthotrexate (NFS, bilan hépatique)', 'Éviter traumatismes cutanés (phénomène de Koebner)', 'Alcool et tabac aggravent le psoriasis', 'Contre-indication grossesse pour Méthotrexate'],
-    measures: ['Photothérapie UVB à discuter avec le dermatologue', 'Éviter stress et fatigue intense', 'Bains avec huile ou amidon de maïs', 'Bilan cardio-métabolique annuel', 'Soutien psychologique si retentissement social']
+    precautions: ['Suivi biologique si Méthotrexate prescrit','Éviter traumatismes cutanés (phénomène de Koebner)','Alcool et tabac aggravent le psoriasis','Contre-indiqué grossesse pour Méthotrexate'],
+    mesures: ['Photothérapie UVB à discuter avec dermatologue','Éviter stress et fatigue intense','Bains avec huile ou amidon de maïs','Bilan cardio-métabolique annuel']
   },
   {
     id: 'urticaire',
-    name: 'Urticaire aiguë',
-    description: 'Réaction cutanée caractérisée par l\'apparition rapide de plaques œdémateuses et prurigineuses.',
-    keywords: ['Gonflements / œdème', 'Rougeurs', 'Démangeaisons (prurit)', 'Tout le corps', 'Picotements', 'Chaleur locale'],
-    medications: [
-      { name: 'Cétirizine', dosage: '10 mg', posologie: '1 comprimé/jour', duree: '7 jours' },
-      { name: 'Loratadine', dosage: '10 mg', posologie: '1 comprimé/matin', duree: '7 jours' },
-      { name: 'Prednisone (si sévère)', dosage: '0,5 mg/kg', posologie: '1 prise/matin', duree: '5 jours' }
+    nom: 'Urticaire aiguë',
+    description: 'Réaction cutanée rapide caractérisée par des plaques œdémateuses et prurigineuses.',
+    motsCles: ['Gonflements / œdème','Rougeurs','Démangeaisons (prurit)','Tout le corps','Picotements','Chaleur locale'],
+    medicaments: [
+      { nom:'Cétirizine', dosage:'10 mg', posologie:'1 comprimé/jour', duree:'7 jours' },
+      { nom:'Loratadine', dosage:'10 mg', posologie:'1 comprimé/matin', duree:'7 jours' },
+      { nom:'Prednisone (si sévère)', dosage:'0,5 mg/kg', posologie:'1 prise/matin', duree:'5 jours' }
     ],
-    precautions: ['Consulter en urgence si œdème de Quincke', 'Identifier et éviter l\'allergène causal', 'Éviter aspirine et AINS', 'Éviter chaleur excessive et effort physique intense'],
-    measures: ['Bilan allergologique pour identifier le facteur déclenchant', 'Tenir un journal des symptômes', 'Appliquer des compresses fraîches sur les zones prurigineuses', 'Vêtements amples en coton', 'Ne pas consommer alcool pendant le traitement']
+    precautions: ['Urgence médicale si œdème de Quincke','Identifier et éviter l\'allergène causal','Éviter aspirine et AINS','Éviter chaleur excessive et effort intense'],
+    mesures: ['Bilan allergologique complet','Tenir un journal des symptômes et aliments','Appliquer compresses fraîches sur zones prurigineuses','Vêtements amples en coton']
   },
   {
     id: 'teigne',
-    name: 'Dermatophytose (Teigne / Tinea)',
-    description: 'Infection fongique superficielle de la peau, des ongles ou du cuir chevelu causée par des dermatophytes.',
-    keywords: ['Cuir chevelu', 'Squames (peau qui pèle)', 'Rougeurs', 'Taches brunes', 'Démangeaisons (prurit)', 'Croûtes'],
-    medications: [
-      { name: 'Fluconazole', dosage: '150 mg', posologie: '1 comprimé/semaine', duree: '4 semaines' },
-      { name: 'Terbinafine 1% crème', dosage: '1%', posologie: '2 applications/jour sur lésion', duree: '2-4 semaines' },
-      { name: 'Kétoconazole shampooing 2%', dosage: '2%', posologie: '2x/semaine (si cuir chevelu)', duree: '4 semaines' }
+    nom: 'Dermatophytose (Teigne)',
+    description: 'Infection fongique superficielle de la peau causée par des dermatophytes.',
+    motsCles: ['Cuir chevelu','Squames (peau qui pèle)','Rougeurs','Taches brunes','Démangeaisons (prurit)','Croûtes'],
+    medicaments: [
+      { nom:'Fluconazole', dosage:'150 mg', posologie:'1 comprimé/semaine', duree:'4 semaines' },
+      { nom:'Terbinafine 1% crème', dosage:'1%', posologie:'2 applications/jour', duree:'2-4 semaines' },
+      { nom:'Kétoconazole shampooing 2%', dosage:'2%', posologie:'2x/semaine si cuir chevelu', duree:'4 semaines' }
     ],
-    precautions: ['Ne pas partager serviettes ou accessoires de coiffure', 'Éviter milieux humides prolongés', 'Désinfecter les vêtements et literie en contact', 'Vérifier entourage proche (contagieux)'],
-    measures: ['Sécher soigneusement la peau après douche', 'Porter des chaussures respirantes', 'Changer de chaussettes quotidiennement', 'Lavage des vêtements à 60°C', 'Contrôle mycologique après traitement']
+    precautions: ['Ne pas partager serviettes ou accessoires','Éviter milieux humides prolongés','Désinfecter vêtements et literie à 60°C','Contagieux : vérifier l\'entourage proche'],
+    mesures: ['Sécher soigneusement la peau après douche','Porter des chaussures respirantes','Changer de chaussettes quotidiennement','Contrôle mycologique après traitement']
   },
   {
     id: 'zona',
-    name: 'Zona (Herpès Zoster)',
-    description: 'Réactivation du virus varicelle-zona (VZV) provoquant une éruption vésiculaire douloureuse unilatérale.',
-    keywords: ['Vésicules (cloques)', 'Douleurs / brûlures', 'Picotements', 'Rougeurs', 'Croûtes', 'Bras', 'Torse'],
-    medications: [
-      { name: 'Valaciclovir', dosage: '1000 mg', posologie: '3 fois/jour', duree: '7 jours' },
-      { name: 'Paracétamol', dosage: '1000 mg', posologie: '3-4 fois/jour si douleur', duree: '7 jours' },
-      { name: 'Gabapentine', dosage: '300 mg', posologie: '3 fois/jour si névralgie', duree: '4 semaines' }
+    nom: 'Zona (Herpès Zoster)',
+    description: 'Réactivation du virus VZV avec éruption vésiculaire douloureuse et unilatérale.',
+    motsCles: ['Vésicules (cloques)','Douleurs / brûlures','Picotements','Rougeurs','Croûtes','Bras','Torse'],
+    medicaments: [
+      { nom:'Valaciclovir', dosage:'1000 mg', posologie:'3 fois/jour', duree:'7 jours' },
+      { nom:'Paracétamol', dosage:'1000 mg', posologie:'3-4 fois/jour si douleur', duree:'7 jours' },
+      { nom:'Gabapentine', dosage:'300 mg', posologie:'3 fois/jour si névralgie', duree:'4 semaines' }
     ],
-    precautions: ['Éviter contact avec femmes enceintes non immunisées', 'Ne pas gratter les vésicules', 'Traitement antiviral à débuter dans les 72h', 'Consulter rapidement si zona ophtalmique'],
-    measures: ['Compresses antiseptiques douces sur les lésions', 'Repos et sommeil suffisant', 'Éviter l\'exposition solaire directe', 'Surveillance des névralgies post-zostériennes', 'Vaccination zona recommandée après 50 ans']
+    precautions: ['Éviter contact avec femmes enceintes non immunisées','Ne pas gratter les vésicules','Antiviral à débuter dans les 72 premières heures','Urgence si zona ophtalmique (œil)'],
+    mesures: ['Compresses antiseptiques douces sur les lésions','Repos et sommeil suffisant','Éviter exposition solaire directe','Vaccination zona recommandée après 50 ans']
   },
   {
     id: 'vitiligo',
-    name: 'Vitiligo',
-    description: 'Dermatose acquise caractérisée par une dépigmentation cutanée en taches blanches due à la destruction des mélanocytes.',
-    keywords: ['Taches blanches', 'Visage', 'Mains', 'Bras', 'Sans sensation', 'Tout le corps'],
-    medications: [
-      { name: 'Tacrolimus 0,1% pommade', dosage: '0,1%', posologie: '2 applications/jour sur taches', duree: '3-6 mois' },
-      { name: 'Clobétasol 0,05% crème', dosage: '0,05%', posologie: '1 application/jour (courte durée)', duree: '3 semaines' },
-      { name: 'Ruxolitinib crème 1,5%', dosage: '1,5%', posologie: '2 applications/jour', duree: '6 mois' }
+    nom: 'Vitiligo',
+    description: 'Dépigmentation cutanée en taches blanches due à la destruction des mélanocytes.',
+    motsCles: ['Taches blanches','Visage','Mains','Bras','Sans sensation','Tout le corps'],
+    medicaments: [
+      { nom:'Tacrolimus 0,1% pommade', dosage:'0,1%', posologie:'2 applications/jour sur taches', duree:'3-6 mois' },
+      { nom:'Clobétasol 0,05% crème', dosage:'0,05%', posologie:'1 application/jour', duree:'3 semaines' },
+      { nom:'Ruxolitinib crème 1,5%', dosage:'1,5%', posologie:'2 applications/jour', duree:'6 mois' }
     ],
-    precautions: ['Protection solaire SPF 50+ impérative sur les zones dépigmentées', 'Éviter les traumatismes cutanés', 'Suivi psychologique souvent bénéfique', 'Bilan thyroïdien recommandé'],
-    measures: ['Photothérapie UVB à bande étroite (traitement de référence)', 'Maquillage camouflant si retentissement psychologique', 'Bilan auto-immun complet', 'Éviter les tatouages sur zones atteintes', 'Groupes de soutien et associations de patients']
+    precautions: ['Protection solaire SPF 50+ impérative sur zones dépigmentées','Éviter les traumatismes cutanés','Suivi psychologique souvent bénéfique','Bilan thyroïdien recommandé'],
+    mesures: ['Photothérapie UVB à bande étroite (traitement de référence)','Maquillage camouflant si retentissement psychologique','Bilan auto-immun complet','Associations de patients pour soutien']
   },
   {
     id: 'rosacee',
-    name: 'Rosacée',
-    description: 'Dermatose chronique du visage caractérisée par des rougeurs persistantes, érythrose, télangiectasies et parfois papulopustules.',
-    keywords: ['Visage', 'Rougeurs', 'Boutons / papules', 'Pustules (pus)', 'Chaleur locale', 'Picotements'],
-    medications: [
-      { name: 'Métronidazole 0,75% gel', dosage: '0,75%', posologie: '2 applications/jour', duree: '12 semaines' },
-      { name: 'Doxycycline', dosage: '40 mg LP', posologie: '1 gélule/matin', duree: '3 mois' },
-      { name: 'Brimonidine 0,33% gel', dosage: '0,33%', posologie: '1 application/matin', duree: '12 semaines' }
+    nom: 'Rosacée',
+    description: 'Dermatose chronique du visage avec rougeurs persistantes, érythrose et parfois papulopustules.',
+    motsCles: ['Visage','Rougeurs','Boutons / papules','Pustules (pus)','Chaleur locale','Picotements'],
+    medicaments: [
+      { nom:'Métronidazole 0,75% gel', dosage:'0,75%', posologie:'2 applications/jour', duree:'12 semaines' },
+      { nom:'Doxycycline LP', dosage:'40 mg', posologie:'1 gélule/matin', duree:'3 mois' },
+      { nom:'Brimonidine 0,33% gel', dosage:'0,33%', posologie:'1 application/matin (rougeurs)', duree:'12 semaines' }
     ],
-    precautions: ['Éviter soleil, chaleur, épices, alcool, café', 'Utiliser des cosmétiques doux pour peaux sensibles', 'Ne pas utiliser de corticoïdes', 'Protection solaire SPF 50+ quotidienne'],
-    measures: ['Identifier et noter ses facteurs déclenchants personnels', 'Nettoyage très doux à l\'eau tiède', 'Laser vasculaire pour les télangiectasies persistantes', 'Éviter les sports très intenses par temps chaud', 'Alimentation anti-inflammatoire']
+    precautions: ['Éviter soleil, chaleur, épices, alcool, café','Utiliser cosmétiques doux peaux sensibles','Ne jamais utiliser de corticoïdes locaux','SPF 50+ quotidien obligatoire'],
+    mesures: ['Identifier et noter ses facteurs déclenchants','Nettoyage très doux à l\'eau tiède','Laser vasculaire pour télangiectasies','Alimentation anti-inflammatoire']
   },
   {
     id: 'impetigo',
-    name: 'Impétigo',
-    description: 'Infection cutanée bactérienne superficielle très contagieuse, causée par Staphylocoque doré ou Streptocoque.',
-    keywords: ['Croûtes', 'Rougeurs', 'Vésicules (cloques)', 'Suintement', 'Visage', 'Mains', 'Bras'],
-    medications: [
-      { name: 'Acide fucidique 2% crème', dosage: '2%', posologie: '3 applications/jour sur lésions', duree: '7 jours' },
-      { name: 'Amoxicilline-Clavulanate', dosage: '875/125 mg', posologie: '1 comprimé 2x/jour', duree: '7 jours' },
-      { name: 'Chlorhexidine solution', dosage: '0,05%', posologie: 'Nettoyage 2x/jour', duree: '7 jours' }
+    nom: 'Impétigo',
+    description: 'Infection bactérienne superficielle très contagieuse causée par Staphylocoque ou Streptocoque.',
+    motsCles: ['Croûtes','Rougeurs','Vésicules (cloques)','Suintement','Visage','Mains','Bras'],
+    medicaments: [
+      { nom:'Acide fucidique 2% crème', dosage:'2%', posologie:'3 applications/jour sur lésions', duree:'7 jours' },
+      { nom:'Amoxicilline-Clavulanate', dosage:'875/125 mg', posologie:'1 comprimé 2x/jour', duree:'7 jours' },
+      { nom:'Chlorhexidine solution 0,05%', dosage:'0,05%', posologie:'Nettoyage 2x/jour', duree:'7 jours' }
     ],
-    precautions: ['Très contagieux : éviter contact physique avec entourage', 'Ne pas partager serviettes et vêtements', 'Éviter école ou crèche jusqu\'à guérison des lésions', 'Se laver les mains fréquemment'],
-    measures: ['Ramollir et retirer délicatement les croûtes avec compresse humide', 'Couvrir les lésions avec un pansement propre', 'Désinfecter literie et vêtements à 60°C', 'Couper les ongles courts', 'Surveillance des complications']
+    precautions: ['Très contagieux : éviter tout contact physique','Ne pas partager serviettes ou vêtements','Éviter école ou crèche jusqu\'à guérison','Se laver les mains très fréquemment'],
+    mesures: ['Ramollir les croûtes avec compresse humide','Couvrir les lésions avec pansement propre','Laver vêtements et literie à 60°C','Couper les ongles courts']
   },
   {
     id: 'melanome',
-    name: 'Lésion pigmentée suspecte (à explorer)',
-    description: 'Présence de taches brunes ou foncées évolutives pouvant nécessiter une analyse dermatoscopique urgente pour écarter un mélanome.',
-    keywords: ['Taches brunes', 'Ulcérations', 'Saignement', 'Bras', 'Dos', 'Jambes'],
-    medications: [
-      { name: 'Aucun traitement médicamenteux à l\'automédication', dosage: '—', posologie: 'Consultation URGENTE requise', duree: '—' }
+    nom: 'Lésion pigmentée suspecte',
+    description: 'Taches brunes évolutives nécessitant une analyse dermatoscopique urgente pour écarter un mélanome.',
+    motsCles: ['Taches brunes','Ulcérations','Saignement','Bras','Dos','Jambes'],
+    medicaments: [
+      { nom:'⚠️ CONSULTATION URGENTE REQUISE', dosage:'—', posologie:'Voir un dermatologue immédiatement', duree:'—' }
     ],
-    precautions: ['⚠️ CONSULTER UN DERMATOLOGUE EN URGENCE', 'Ne pas appliquer de crème ou traitement sur la lésion', 'Photographier la lésion pour suivre l\'évolution', 'Éviter toute exposition UV sur la lésion'],
-    measures: ['Exérèse et analyse anatomopathologique par dermatologue', 'Bilan d\'extension si mélanome confirmé', 'Protection solaire totale quotidienne', 'Surveillance tous les 3 mois des nævi', 'Sensibiliser la famille (risque génétique)']
+    precautions: ['⚠️ CONSULTER UN DERMATOLOGUE EN URGENCE','Ne pas appliquer de crème sur la lésion','Photographier la lésion pour suivi','Éviter toute exposition UV sur la lésion'],
+    mesures: ['Exérèse et analyse anatomopathologique urgente','Bilan d\'extension si mélanome confirmé','Protection solaire totale quotidienne','Surveillance des nævi tous les 3 mois']
   }
 ];
 
-// ══════════════════════════════════
-// FONCTIONS
-// ══════════════════════════════════
-function toggleTag(el, group) {
-  el.classList.toggle('selected');
-  const val = el.textContent.trim();
-  if (el.classList.contains('selected')) {
-    selectedTags[group].push(val);
+/* ══════════════════════════════════════
+   LOGIQUE PATIENT — FORMULAIRE
+══════════════════════════════════════ */
+function basculerTag(el, groupe) {
+  el.classList.toggle('selectionne');
+  const valeur = el.textContent.trim();
+  if (el.classList.contains('selectionne')) {
+    tagsChoisis[groupe].push(valeur);
   } else {
-    selectedTags[group] = selectedTags[group].filter(t => t !== val);
+    tagsChoisis[groupe] = tagsChoisis[groupe].filter(t => t !== valeur);
   }
 }
 
-function setSeverity(val, el) {
-  severity = val;
-  document.querySelectorAll('.sev-btn').forEach(b => b.className = 'sev-btn');
-  if (val === 'Légère') el.classList.add('active-mild');
-  else if (val === 'Modérée') el.classList.add('active-moderate');
-  else el.classList.add('active-severe');
+function choisirSeverite(valeur, el) {
+  severiteChoisie = valeur;
+  document.querySelectorAll('.btn-sev').forEach(b => b.className = 'btn-sev');
+  if (valeur === 'Légère') el.classList.add('leger');
+  else if (valeur === 'Modérée') el.classList.add('modere');
+  else el.classList.add('severe');
 }
 
-function goToStep(n) {
-  [1,2,3].forEach(i => {
-    document.getElementById('step'+i).classList.remove('active');
-    document.getElementById('s'+i).className = 'step';
+function allerEtape(n) {
+  [1, 2, 3].forEach(i => {
+    document.getElementById('carte-etape' + i).style.display = 'none';
+    document.getElementById('etape' + i).className = 'etape';
   });
-  document.getElementById('step'+n).classList.add('active');
-  document.getElementById('s'+n).classList.add('active');
-  for (let i=1; i<n; i++) {
-    document.getElementById('s'+i).classList.add('done');
-    document.getElementById('line'+i).classList.add('done');
+  document.getElementById('carte-etape' + n).style.display = 'block';
+  document.getElementById('etape' + n).classList.add('active');
+  for (let i = 1; i < n; i++) {
+    document.getElementById('etape' + i).classList.add('faite');
+    document.getElementById('ligne' + i).classList.add('faite');
   }
-  window.scrollTo({top:0, behavior:'smooth'});
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function startAnalysis() {
-  const name = document.getElementById('patient-name').value.trim();
-  const age = document.getElementById('patient-age').value.trim();
-  if (!name || !age) {
-    alert('Veuillez renseigner votre nom et votre âge.');
-    return;
-  }
-  const allSymptoms = Object.values(selectedTags).flat();
-  if (allSymptoms.length < 2) {
-    alert('Veuillez sélectionner au moins 2 symptômes.');
-    return;
-  }
-  goToStep(2);
-  document.getElementById('loading-section').classList.add('show');
-  document.getElementById('diagnosis-result').style.display = 'none';
-  const msgs = [
+function lancerAnalyse() {
+  const nom = document.getElementById('p-nom').value.trim();
+  const age = document.getElementById('p-age').value.trim();
+  if (!nom || !age) { alert('Veuillez renseigner votre nom et votre âge.'); return; }
+  const tousSymptomes = Object.values(tagsChoisis).flat();
+  if (tousSymptomes.length < 2) { alert('Veuillez sélectionner au moins 2 symptômes.'); return; }
+
+  allerEtape(2);
+  document.getElementById('zone-chargement').classList.add('visible');
+  document.getElementById('contenu-diagnostic').style.display = 'none';
+
+  const messages = [
     'Consultation des bases de données cliniques…',
     'Analyse des symptômes dermatologiques…',
     'Corrélation avec 2 847 cas référencés…',
     'Identification du diagnostic différentiel…',
-    'Génération des recommandations…'
+    'Génération des recommandations personnalisées…'
   ];
   let idx = 0;
-  const interval = setInterval(() => {
-    if (idx < msgs.length) {
-      document.getElementById('loading-msg').textContent = msgs[idx++];
-    }
+  const intervalle = setInterval(() => {
+    if (idx < messages.length) document.getElementById('msg-chargement').textContent = messages[idx++];
   }, 900);
+
   setTimeout(() => {
-    clearInterval(interval);
-    computeDiagnosis(allSymptoms);
+    clearInterval(intervalle);
+    calculerDiagnostic(tousSymptomes);
   }, 5000);
 }
 
-function computeDiagnosis(symptoms) {
-  const scores = SKIN_DISEASES.map(d => {
+function calculerDiagnostic(symptomes) {
+  const scores = MALADIES.map(m => {
     let score = 0;
-    d.keywords.forEach(kw => { if (symptoms.includes(kw)) score++; });
-    return { disease: d, score };
+    m.motsCles.forEach(mc => { if (symptomes.includes(mc)) score++; });
+    return { maladie: m, score };
   });
-  scores.sort((a,b) => b.score - a.score);
-  const best = scores[0];
-  const pct = Math.min(95, Math.max(45, Math.round((best.score / best.disease.keywords.length) * 100)));
-  diagnosisData = { ...best.disease, confidence: pct };
-  document.getElementById('loading-section').classList.remove('show');
-  document.getElementById('diagnosis-result').style.display = 'block';
-  document.getElementById('diag-name').textContent = best.disease.name;
-  document.getElementById('diag-desc').textContent = best.disease.description;
-  setTimeout(() => { document.getElementById('conf-fill').style.width = pct + '%'; }, 100);
-  document.getElementById('conf-pct').textContent = 'Concordance : ' + pct + '%';
-  const medsList = document.getElementById('res-meds'); medsList.innerHTML = '';
-  best.disease.medications.forEach(m => {
-    const li = document.createElement('li');
-    li.textContent = m.name + (m.dosage !== '—' ? ' ' + m.dosage : '');
-    medsList.appendChild(li);
-  });
-  const precList = document.getElementById('res-precautions'); precList.innerHTML = '';
-  best.disease.precautions.forEach(p => {
-    const li = document.createElement('li'); li.textContent = p; precList.appendChild(li);
-  });
-  const measList = document.getElementById('res-measures'); measList.innerHTML = '';
-  best.disease.measures.forEach(m => {
-    const li = document.createElement('li'); li.textContent = m; measList.appendChild(li);
-  });
+  scores.sort((a, b) => b.score - a.score);
+  const meilleur = scores[0];
+  const pct = Math.min(95, Math.max(45, Math.round((meilleur.score / meilleur.maladie.motsCles.length) * 100)));
+  donnesDiag = { ...meilleur.maladie, confiance: pct };
+
+  document.getElementById('zone-chargement').classList.remove('visible');
+  document.getElementById('contenu-diagnostic').style.display = 'block';
+  document.getElementById('diag-nom').textContent = meilleur.maladie.nom;
+  document.getElementById('diag-desc').textContent = meilleur.maladie.description;
+  setTimeout(() => { document.getElementById('barre-conf').style.width = pct + '%'; }, 100);
+  document.getElementById('pct-conf').textContent = 'Concordance : ' + pct + '%';
+
+  const lMeds = document.getElementById('liste-medicaments'); lMeds.innerHTML = '';
+  meilleur.maladie.medicaments.forEach(m => { const li = document.createElement('li'); li.textContent = m.nom + (m.dosage !== '—' ? ' — ' + m.dosage : ''); lMeds.appendChild(li); });
+
+  const lPrec = document.getElementById('liste-precautions'); lPrec.innerHTML = '';
+  meilleur.maladie.precautions.forEach(p => { const li = document.createElement('li'); li.textContent = p; lPrec.appendChild(li); });
+
+  const lMes = document.getElementById('liste-mesures'); lMes.innerHTML = '';
+  meilleur.maladie.mesures.forEach(m => { const li = document.createElement('li'); li.textContent = m; lMes.appendChild(li); });
 }
 
-async function showPrescription() {
-  const name = document.getElementById('patient-name').value.trim();
-  const age = document.getElementById('patient-age').value.trim();
-  const sex = document.getElementById('patient-sex').value;
-  const skinType = document.getElementById('skin-type').value;
-  const extra = document.getElementById('extra-info').value.trim();
+async function creerOrdonnance() {
+  const nom = document.getElementById('p-nom').value.trim();
+  const age = document.getElementById('p-age').value.trim();
+  const sexe = document.getElementById('p-sexe').value;
+  const peau = document.getElementById('p-peau').value;
+  const extra = document.getElementById('p-extra').value.trim();
   const today = new Date();
-  const dateStr = today.toLocaleDateString('fr-FR', { day:'2-digit', month:'long', year:'numeric' });
-  const rxNum = 'DC-' + today.getFullYear() + '-' + String(Math.floor(Math.random()*9000+1000));
-  const symptoms = Object.values(selectedTags).flat();
+  const dateAffichage = today.toLocaleDateString('fr-FR', { day:'2-digit', month:'long', year:'numeric' });
+  const rxNum = 'DC-' + today.getFullYear() + '-' + String(Math.floor(Math.random() * 9000 + 1000));
+  const symptomes = Object.values(tagsChoisis).flat();
 
   // Remplir l'ordonnance
-  document.getElementById('rx-patient-name').textContent = name || '—';
-  document.getElementById('rx-patient-age').textContent = (age ? age + ' ans' : '—') + (sex ? ' • ' + sex : '');
-  document.getElementById('rx-skin-type').textContent = skinType || '—';
-  document.getElementById('rx-date').textContent = dateStr;
-  document.getElementById('rx-num').textContent = rxNum;
-  document.getElementById('rx-diag-name').textContent = diagnosisData.name;
-  document.getElementById('rx-diag-desc').textContent = diagnosisData.description;
-  const tbody = document.getElementById('rx-med-tbody'); tbody.innerHTML = '';
-  diagnosisData.medications.forEach(m => {
+  document.getElementById('rx-nom').textContent = nom || '—';
+  document.getElementById('rx-age').textContent = (age ? age + ' ans' : '—') + (sexe ? ' • ' + sexe : '');
+  document.getElementById('rx-peau').textContent = peau || '—';
+  document.getElementById('rx-date').textContent = dateAffichage;
+  document.getElementById('rx-numero').textContent = rxNum;
+  document.getElementById('rx-diag-nom').textContent = donnesDiag.nom;
+  document.getElementById('rx-diag-desc').textContent = donnesDiag.description;
+
+  const tbody = document.getElementById('rx-tableau-corps'); tbody.innerHTML = '';
+  donnesDiag.medicaments.forEach(m => {
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${m.name}</td><td>${m.dosage}</td><td>${m.posologie}</td><td>${m.duree}</td>`;
+    tr.innerHTML = `<td>${m.nom}</td><td>${m.dosage}</td><td>${m.posologie}</td><td>${m.duree}</td>`;
     tbody.appendChild(tr);
   });
-  const rxPrec = document.getElementById('rx-precautions'); rxPrec.innerHTML = '';
-  diagnosisData.precautions.forEach(p => {
-    const li = document.createElement('li'); li.textContent = p; rxPrec.appendChild(li);
-  });
-  const rxMeas = document.getElementById('rx-measures'); rxMeas.innerHTML = '';
-  diagnosisData.measures.forEach(m => {
-    const li = document.createElement('li'); li.textContent = m; rxMeas.appendChild(li);
-  });
 
-  // ══ SAUVEGARDE SUPABASE ══
+  const rxPrec = document.getElementById('rx-precautions'); rxPrec.innerHTML = '';
+  donnesDiag.precautions.forEach(p => { const li = document.createElement('li'); li.textContent = p; rxPrec.appendChild(li); });
+
+  const rxMes = document.getElementById('rx-mesures'); rxMes.innerHTML = '';
+  donnesDiag.mesures.forEach(m => { const li = document.createElement('li'); li.textContent = m; rxMes.appendChild(li); });
+
+  // Sauvegarder dans Supabase
   try {
-    const { error } = await supabaseClient.from('consultations').insert({
-      patient_name: name,
+    const { error } = await db.from('consultations').insert({
+      patient_name: nom,
       patient_age: parseInt(age) || 0,
-      patient_sex: sex || '—',
-      skin_type: skinType || '—',
-      symptoms: symptoms,
-      severity: severity || 'Non précisée',
-      diagnosis_id: diagnosisData.id,
-      diagnosis_name: diagnosisData.name,
-      diagnosis_description: diagnosisData.description,
-      diagnosis_confidence: diagnosisData.confidence,
-      medications: diagnosisData.medications,
-      precautions: diagnosisData.precautions,
-      measures: diagnosisData.measures,
+      patient_sex: sexe || '—',
+      skin_type: peau || '—',
+      symptoms: symptomes,
+      severity: severiteChoisie || 'Non précisée',
+      diagnosis_id: donnesDiag.id,
+      diagnosis_name: donnesDiag.nom,
+      diagnosis_description: donnesDiag.description,
+      diagnosis_confidence: donnesDiag.confiance,
+      medications: donnesDiag.medicaments,
+      precautions: donnesDiag.precautions,
+      measures: donnesDiag.mesures,
       extra_info: extra,
       rx_number: rxNum
     });
     if (error) throw error;
-    showToast('✅ Consultation enregistrée avec succès !', 'success');
-  } catch(e) {
-    showToast('⚠️ Erreur lors de l\'enregistrement', 'error');
+    afficherToast('✅ Consultation enregistrée avec succès !', 'succes');
+  } catch (e) {
+    afficherToast('⚠️ Erreur lors de l\'enregistrement', 'erreur');
     console.error(e);
   }
 
-  goToStep(3);
+  allerEtape(3);
 }
 
-function resetApp() {
-  selectedTags = { location: [], visual: [], sensation: [], duration: [] };
-  severity = '';
-  diagnosisData = null;
-  document.querySelectorAll('.tag').forEach(t => t.classList.remove('selected'));
-  document.querySelectorAll('.sev-btn').forEach(b => b.className = 'sev-btn');
-  document.getElementById('patient-name').value = '';
-  document.getElementById('patient-age').value = '';
-  document.getElementById('patient-sex').value = '';
-  document.getElementById('skin-type').value = '';
-  document.getElementById('extra-info').value = '';
-  document.querySelectorAll('.step-line').forEach(l => l.classList.remove('done'));
-  goToStep(1);
+function reinitialiser() {
+  tagsChoisis = { localisation:[], visuel:[], sensation:[], duree:[] };
+  severiteChoisie = '';
+  donnesDiag = null;
+  document.querySelectorAll('.tag').forEach(t => t.classList.remove('selectionne'));
+  document.querySelectorAll('.btn-sev').forEach(b => b.className = 'btn-sev');
+  ['p-nom','p-age','p-extra'].forEach(id => document.getElementById(id).value = '');
+  ['p-sexe','p-peau'].forEach(id => document.getElementById(id).value = '');
+  document.querySelectorAll('.etape-ligne').forEach(l => l.classList.remove('faite'));
+  allerEtape(1);
+}
+
+/* ══════════════════════════════════════
+   LOGIQUE ADMIN — DONNÉES SUPABASE
+══════════════════════════════════════ */
+async function chargerDonneesAdmin() {
+  try {
+    const { data, error } = await db.from('consultations').select('*').order('created_at', { ascending: false });
+    if (error) throw error;
+    donneesAdmin = data || [];
+    afficherStats();
+    afficherGraphique();
+    afficherTableau();
+  } catch (e) {
+    afficherToast('Erreur lors du chargement des données', 'erreur');
+    console.error(e);
+  }
+}
+
+function afficherStats() {
+  const aujStr = new Date().toDateString();
+  document.getElementById('stat-total').textContent = donneesAdmin.length;
+  document.getElementById('stat-aujourd-hui').textContent = donneesAdmin.filter(r => new Date(r.created_at).toDateString() === aujStr).length;
+  document.getElementById('stat-severes').textContent = donneesAdmin.filter(r => r.severity === 'Sévère').length;
+  document.getElementById('stat-maladies').textContent = new Set(donneesAdmin.map(r => r.diagnosis_id)).size;
+}
+
+function afficherGraphique() {
+  const carte = document.getElementById('carte-graphique');
+  if (donneesAdmin.length === 0) { carte.style.display = 'none'; return; }
+  carte.style.display = 'block';
+  const comptages = {};
+  donneesAdmin.forEach(r => { comptages[r.diagnosis_name] = (comptages[r.diagnosis_name] || 0) + 1; });
+  const tries = Object.entries(comptages).sort((a, b) => b[1] - a[1]).slice(0, 6);
+  const max = tries[0][1];
+  const conteneur = document.getElementById('contenu-graphique'); conteneur.innerHTML = '';
+  tries.forEach(([nom, nb]) => {
+    const pct = Math.round((nb / max) * 100);
+    const ligne = document.createElement('div'); ligne.className = 'ligne-graphique';
+    ligne.innerHTML = `<div class="label-graphique" title="${nom}">${nom}</div><div class="fond-barre"><div class="remplissage-barre" style="width:0%" data-w="${pct}%"></div></div><div class="chiffre-barre">${nb}</div>`;
+    conteneur.appendChild(ligne);
+  });
+  setTimeout(() => { document.querySelectorAll('.remplissage-barre').forEach(el => el.style.width = el.dataset.w); }, 60);
+}
+
+function afficherTableau() {
+  const recherche = document.getElementById('recherche').value.toLowerCase();
+  const filtSev = document.getElementById('filtre-severite').value;
+  const filtDiag = document.getElementById('filtre-diagnostic').value;
+
+  // Remplir filtre diagnostic
+  const selectDiag = document.getElementById('filtre-diagnostic');
+  const existants = new Set([...selectDiag.options].map(o => o.value).filter(v => v));
+  donneesAdmin.forEach(r => {
+    if (!existants.has(r.diagnosis_name)) {
+      const opt = document.createElement('option');
+      opt.value = r.diagnosis_name; opt.textContent = r.diagnosis_name;
+      selectDiag.appendChild(opt); existants.add(r.diagnosis_name);
+    }
+  });
+
+  let filtres = donneesAdmin.filter(r => {
+    const matchR = !recherche || r.patient_name.toLowerCase().includes(recherche) || r.diagnosis_name.toLowerCase().includes(recherche) || r.rx_number.toLowerCase().includes(recherche);
+    return matchR && (!filtSev || r.severity === filtSev) && (!filtDiag || r.diagnosis_name === filtDiag);
+  });
+
+  document.getElementById('compteur').textContent = filtres.length + ' enregistrement' + (filtres.length !== 1 ? 's' : '');
+  const zone = document.getElementById('contenu-tableau');
+
+  if (filtres.length === 0) {
+    zone.innerHTML = `<div class="etat-vide"><div class="etat-vide-icone">${donneesAdmin.length === 0 ? '🗂️' : '🔍'}</div><div class="etat-vide-titre">${donneesAdmin.length === 0 ? 'Aucune consultation enregistrée' : 'Aucun résultat'}</div><div class="etat-vide-sous">${donneesAdmin.length === 0 ? 'Les consultations des patients apparaîtront ici.' : 'Modifiez vos critères de recherche.'}</div></div>`;
+    return;
+  }
+
+  const tableau = document.createElement('table');
+  tableau.innerHTML = `<thead><tr><th>N° Consultation</th><th>Patient</th><th>Âge</th><th>Date</th><th>Diagnostic</th><th>Sévérité</th><th>Conf.</th></tr></thead>`;
+  const corps = document.createElement('tbody');
+  filtres.forEach(r => {
+    const tr = document.createElement('tr');
+    tr.onclick = () => ouvrirModal(r);
+    const cls = r.severity === 'Légère' ? 'etiquette-leger' : r.severity === 'Modérée' ? 'etiquette-modere' : 'etiquette-severe';
+    const dt = new Date(r.created_at).toLocaleDateString('fr-FR', { day:'2-digit', month:'2-digit', year:'numeric' });
+    tr.innerHTML = `<td><code style="font-size:.72rem;color:var(--teal);font-weight:600;">${r.rx_number}</code></td><td class="nom-patient">${r.patient_name}</td><td>${r.patient_age} ans</td><td>${dt}</td><td><span class="etiquette etiquette-diag">${r.diagnosis_name}</span></td><td><span class="etiquette ${cls}">${r.severity}</span></td><td><strong style="color:var(--navy)">${r.diagnosis_confidence}%</strong></td>`;
+    corps.appendChild(tr);
+  });
+  tableau.appendChild(corps);
+  zone.innerHTML = '';
+  zone.appendChild(tableau);
+}
+
+async function toutSupprimier() {
+  if (!confirm('Supprimer TOUTES les consultations ? Cette action est irréversible.')) return;
+  try {
+    const { error } = await db.from('consultations').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+    if (error) throw error;
+    donneesAdmin = [];
+    afficherStats(); afficherGraphique(); afficherTableau();
+    afficherToast('Toutes les consultations ont été supprimées', 'succes');
+  } catch (e) { afficherToast('Erreur lors de la suppression', 'erreur'); }
+}
+
+/* ══════════════════════════════════════
+   MODAL DÉTAIL
+══════════════════════════════════════ */
+function ouvrirModal(r) {
+  document.getElementById('modal-titre').textContent = 'Dossier patient — ' + r.patient_name;
+  const cls = r.severity === 'Légère' ? 'etiquette-leger' : r.severity === 'Modérée' ? 'etiquette-modere' : 'etiquette-severe';
+  const d = new Date(r.created_at);
+  const meds = Array.isArray(r.medications) ? r.medications : [];
+  const precs = Array.isArray(r.precautions) ? r.precautions : [];
+  const mes = Array.isArray(r.measures) ? r.measures : [];
+  const syms = Array.isArray(r.symptoms) ? r.symptoms : [];
+
+  document.getElementById('modal-corps').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:1.1rem;">
+      <div style="background:var(--light);border-radius:9px;padding:1rem;">
+        <div style="font-size:.68rem;text-transform:uppercase;color:#999;font-weight:700;margin-bottom:.4rem;">Identité patient</div>
+        <div style="font-weight:700;color:var(--navy);font-size:.96rem;">${r.patient_name}</div>
+        <div style="font-size:.81rem;color:var(--gray);margin-top:2px;">${r.patient_age} ans • ${r.patient_sex}</div>
+        <div style="font-size:.79rem;color:var(--gray);">Type de peau : ${r.skin_type}</div>
+      </div>
+      <div style="background:var(--light);border-radius:9px;padding:1rem;">
+        <div style="font-size:.68rem;text-transform:uppercase;color:#999;font-weight:700;margin-bottom:.4rem;">Consultation</div>
+        <div style="font-weight:700;color:var(--teal);font-size:.83rem;">${r.rx_number}</div>
+        <div style="font-size:.8rem;color:var(--gray);margin-top:2px;">${d.toLocaleDateString('fr-FR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'})}</div>
+        <div style="font-size:.79rem;color:var(--gray);">${d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}</div>
+      </div>
+    </div>
+
+    <div style="background:linear-gradient(135deg,#1A3A5C,#2E8B6E);border-radius:11px;padding:1.2rem 1.4rem;color:#fff;margin-bottom:1rem;">
+      <div style="font-size:.68rem;opacity:.7;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Diagnostic retenu</div>
+      <div style="font-family:'Playfair Display',serif;font-size:1.18rem;font-weight:700;">${r.diagnosis_name}</div>
+      <div style="font-size:.79rem;opacity:.85;margin-top:4px;line-height:1.45;">${r.diagnosis_description}</div>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:9px;flex-wrap:wrap;">
+        <span class="etiquette ${cls}">${r.severity}</span>
+        <span style="font-size:.78rem;opacity:.9;">Concordance : <strong>${r.diagnosis_confidence}%</strong></span>
+      </div>
+    </div>
+
+    <div style="font-size:.7rem;text-transform:uppercase;font-weight:700;color:var(--gray);margin-bottom:.5rem;">Symptômes rapportés (${syms.length})</div>
+    <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:1.1rem;">
+      ${syms.map(s => `<span style="background:#EBF4F1;color:var(--teal);border-radius:12px;padding:3px 10px;font-size:.73rem;font-weight:500;">${s}</span>`).join('')}
+    </div>
+
+    <div style="font-size:.7rem;text-transform:uppercase;font-weight:700;color:var(--gray);margin-bottom:.5rem;">Prescription médicamenteuse</div>
+    <table style="width:100%;border-collapse:collapse;margin-bottom:1.1rem;background:var(--light);border-radius:8px;overflow:hidden;">
+      <thead><tr style="background:#E2E8F0;">
+        <th style="padding:7px 10px;font-size:.67rem;text-transform:uppercase;text-align:left;color:#999;border-bottom:1px solid var(--border);">Médicament</th>
+        <th style="padding:7px 10px;font-size:.67rem;text-transform:uppercase;text-align:left;color:#999;border-bottom:1px solid var(--border);">Dosage</th>
+        <th style="padding:7px 10px;font-size:.67rem;text-transform:uppercase;text-align:left;color:#999;border-bottom:1px solid var(--border);">Posologie</th>
+        <th style="padding:7px 10px;font-size:.67rem;text-transform:uppercase;text-align:left;color:#999;border-bottom:1px solid var(--border);">Durée</th>
+      </tr></thead>
+      <tbody>${meds.map(m => `<tr><td style="padding:8px 10px;font-size:.81rem;font-weight:600;color:var(--navy);">${m.nom||m.name||''}</td><td style="padding:8px 10px;font-size:.79rem;">${m.dosage||''}</td><td style="padding:8px 10px;font-size:.79rem;">${m.posologie||''}</td><td style="padding:8px 10px;font-size:.79rem;">${m.duree||''}</td></tr>`).join('')}</tbody>
+    </table>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:1rem;">
+      <div>
+        <div style="font-size:.7rem;text-transform:uppercase;font-weight:700;color:var(--gray);margin-bottom:.4rem;">Précautions</div>
+        ${precs.map(p => `<div style="font-size:.79rem;color:var(--gray);display:flex;gap:6px;margin-bottom:4px;line-height:1.4;"><span>⚠</span>${p}</div>`).join('')}
+      </div>
+      <div>
+        <div style="font-size:.7rem;text-transform:uppercase;font-weight:700;color:var(--gray);margin-bottom:.4rem;">Mesures</div>
+        ${mes.map(m => `<div style="font-size:.79rem;color:var(--gray);display:flex;gap:6px;margin-bottom:4px;line-height:1.4;"><span style="color:var(--teal);font-weight:900;">✓</span>${m}</div>`).join('')}
+      </div>
+    </div>
+
+    ${r.extra_info ? `<div style="background:#F7FAFC;border-radius:8px;padding:.85rem 1rem;font-size:.8rem;color:var(--gray);margin-bottom:1rem;"><strong style="color:var(--navy);">Notes complémentaires :</strong> ${r.extra_info}</div>` : ''}
+
+    <div style="display:flex;gap:.7rem;justify-content:flex-end;padding-top:.9rem;border-top:1px solid var(--border);">
+      <button class="btn btn-danger btn-petit" onclick="supprimerDossier('${r.id}')">🗑 Supprimer</button>
+      <button class="btn btn-secondaire btn-petit" onclick="fermerModal()">Fermer</button>
+    </div>
+  `;
+  document.getElementById('modal').classList.add('ouvert');
+}
+
+function fermerModalFond(e) { if (e.target === document.getElementById('modal')) fermerModal(); }
+function fermerModal() { document.getElementById('modal').classList.remove('ouvert'); }
+
+async function supprimerDossier(id) {
+  if (!confirm('Supprimer définitivement ce dossier patient ?')) return;
+  try {
+    const { error } = await db.from('consultations').delete().eq('id', id);
+    if (error) throw error;
+    donneesAdmin = donneesAdmin.filter(r => r.id !== id);
+    fermerModal();
+    afficherStats(); afficherGraphique(); afficherTableau();
+    afficherToast('Dossier supprimé avec succès', 'succes');
+  } catch (e) { afficherToast('Erreur lors de la suppression', 'erreur'); }
 }
 </script>
 </body>
